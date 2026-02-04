@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#c5a97d">
+    <title>Đình Hữu & Bích Ngân - Thiệp mời đám cưới</title>
+    
+    <!-- Preload critical images -->
+    <link rel="preload" href="assets/images/0L5A8396.jpg" as="image" crossorigin="anonymous">
+    <link rel="preload" href="assets/images/0L5A8270.jpg" as="image" crossorigin="anonymous">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;500&family=Dancing+Script:wght@600&family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-spinner"></div>
+    </div>
+    
+    <!-- Background Elements -->
+    <canvas id="stars"></canvas>
+    <div class="petals-container"></div>
+
+    <!-- Music Control -->
+    <audio id="weddingMusic" loop preload="auto">
+        <source src="assets/music/Perfect.mp3" type="audio/mpeg">
+    </audio>
+    <button id="musicToggle" class="music-btn" aria-label="Bật/tắt nhạc">
+        <i class="fas fa-music"></i>
+    </button>
+
+    <!-- Hero Section -->
+    <header class="hero" id="hero">
+        <div class="hero-background">
+            <div class="background-slideshow">
+                <div class="slide active" data-bg="assets/images/60x90sua.jpg"></div>
+                <div class="slide" data-bg="assets/images/0L5A8270.jpg"></div>
+                <div class="slide" data-bg="assets/images/0L5A8480.jpg"></div>
+                <div class="slide" data-bg="assets/images/0L5A8607.jpg"></div>
+            </div>
+            <div class="background-overlay"></div>
+        </div>
+        
+        <div class="hero-content">
+            <div class="couple-names">
+                <h1 class="groom-name">Đình Hữu</h1>
+                <div class="heart-divider">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h1 class="bride-name">Bích Ngân</h1>
+            </div>
+            <a href="#story" class="btn-scroll">
+                <span>Khám phá câu chuyện của chúng tôi</span>
+                <i class="fas fa-chevron-down"></i>
+            </a>
+        </div>
+        <div class="hero-overlay"></div>
+        
+        <!-- Slideshow Controls -->
+        <div class="slideshow-controls">
+            <button class="prev-btn" aria-label="Ảnh trước">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <div class="slide-dots"></div>
+            <button class="next-btn" aria-label="Ảnh tiếp">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Love Story -->
+        <section id="story" class="section story-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Câu Chuyện Tình Yêu</h2>
+                    <p class="section-subtitle">Hành trình của chúng tôi bắt đầu từ những điều nhỏ bé nhất</p>
+                </div>
+
+                <div class="love-quote">
+                    <i class="fas fa-quote-left"></i>
+                    <p>"Tình yêu không chỉ là một danh từ – nó là một động từ… đó là sự quan tâm, chia sẻ, giúp đỡ, hy sinh"</p>
+                    <i class="fas fa-quote-right"></i>
+                </div>
+
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <div class="timeline-image">
+                                <div class="image-quad-container">
+                                    <div class="quad-image">
+                                        <img src="assets/images/hs1.png" alt="Lần đầu gặp 1" loading="lazy">
+                                    </div>
+                                    <div class="quad-image">
+                                        <img src="assets/images/hs3.png" alt="Lần đầu gặp 2" loading="lazy">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="timeline-text">
+                                <div class="timeline-marker">
+                                    <i class="fas fa-heart"></i>
+                                </div>
+                                <h4>Bạn có tin vào định mệnh không?</h4>
+                                <p>Họ gặp nhau từ năm lớp 8, khi chàng từ Hà Tĩnh vào Bình Thuận học chung lớp với nàng. Mối tình học trò âm thầm bắt đầu, với cảm tình chàng kín đáo giữ trong tim. Kỳ thi chuyển cấp qua đi, câu hỏi "liệu cấp ba còn gặp nhau?" vẫn chưa có lời đáp.
+
+Nhưng duyên phận kỳ lạ, cả hai cùng đỗ vào một lớp chuyên. Ba năm cấp ba bên nhau, tình cảm vẫn thấp thoáng trong những trò đùa tinh nghịch, lời chưa dám nói.
+
+Đại học đưa họ về hai ngả trời, bốn năm xa cách, ít liên lạc. Rồi một ngày sinh nhật nàng – 15/11/2021, chàng bất ngờ liên lạc và dũng cảm tỏ tình. Câu chuyện cổ tích giữa đời thường, từ đây, mới thực sự bắt đầu.</p>
+                                <span class="timeline-date">Tháng 9, 2013</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item reverse">
+                        <div class="timeline-content">
+                            <div class="timeline-image">
+                                <div class="image-quad-container">
+                                    <div class="quad-image">
+                                        <img src="assets/images/hh1.jpg" alt="Lần đầu gặp 1" loading="lazy">
+                                    </div>
+                                    <div class="quad-image">
+                                        <img src="assets/images/hh3.png" alt="Lần đầu gặp 2" loading="lazy">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="timeline-text">
+                                <div class="timeline-marker">
+                                    <i class="fas fa-heart"></i>
+                                </div>
+                                <h3>Gặp mặt & Tỏ tình</h3>
+                                <p>Sau những ngày trò chuyện qua chat, chàng quyết định gặp lại nàng. Mọi thứ được chuẩn bị thật kỹ: nhà hàng, món quà nhỏ, cả những lời sẽ nói khi gặp. Điểm hẹn đầu tiên là The Deck Sài Gòn. Có lẽ vì xa nhau quá lâu, hai đứa chỉ ngại ngùng đứng cạnh, chưa dám chụp ảnh chung. Nhưng buổi tối hôm ấy thật tuyệt vời — dù sau đó chàng “cháy túi” vì nàng đã… giữ hết tiền.
+
+Ba tháng sau, ngày 13/12/2021, chàng lấy hết can đảm tỏ tình. Vì hồi hộp, lời nói có phần vụng về, nhưng trái tim thì chân thành. Và thật may, nàng đã gật đầu. Từ khoảnh khắc ấy, chúng tôi chính thức viết tiếp câu chuyện tình yêu kéo dài suốt 3 năm thanh xuân.</p>
+                                <span class="timeline-date">19/11/2022 và 13/12/2022</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <div class="timeline-image">
+                                <div class="image-quad-container">
+                                    <div class="quad-image">
+                                        <img src="assets/images/travel4.jpg" alt="Lần đầu gặp 1" loading="lazy">
+                                    </div>
+                                    <div class="quad-image">
+                                        <img src="assets/images/travel2.JPG" alt="Lần đầu gặp 2" loading="lazy">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="timeline-text">
+                                <div class="timeline-marker">
+                                    <i class="fas fa-heart"></i>
+                                </div>
+                                <h3>Những chuyến đi chơi.</h3>
+                                <p>Mọi thứ diễn ra thật đẹp — như thể chàng và nàng sinh ra là dành cho nhau. Sau đó, cuộc sống trở nên ngọt ngào hơn từng ngày. Tan ca, chàng lại đều đặn chở nàng rong ruổi khắp Sài Gòn, gom góp từng khoảnh khắc bình yên.
+
+Rồi đến những chuyến đi xa, từ Bắc chí Nam — bằng máy bay, xe khách, tàu hỏa, cả những hành trình phượt dài. Mỗi cung đường đi qua như chỉ thuộc về hai người. Kỷ niệm được lưu giữ qua vô vàn bức ảnh, nhiều đến mức Google Drive hay Google Photos cũng chẳng đủ chỗ chứa câu chuyện của hai đứa.
+
+Để rồi cả hai lại cùng… cháy túi, quay về guồng quay công việc, mang theo đầy ắp kỷ niệm và những dự định cho tương lai.</p>
+                                <span class="timeline-date">2022-2025</span>
+                            </div>
+                        </div>
+                    </div>
+
+                     <div class="timeline-item reverse">
+                        <div class="timeline-content">
+                            <div class="timeline-image">
+                                <div class="image-quad-container">
+                                    <div class="quad-image">
+                                        <img src="assets/images/ch1.jpg" alt="Lần đầu gặp 1" loading="lazy">
+                                    </div>
+                                    <div class="quad-image">
+                                        <img src="assets/images/ch2.jpg" alt="Lần đầu gặp 2" loading="lazy">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="timeline-text">
+                                <div class="timeline-marker">
+                                    <i class="fas fa-heart"></i>
+                                </div>
+                                <h3>Giây phút cầu hôn</h3>
+                                <p>Để chuẩn bị cho màn cầu hôn trong mơ, chàng âm thầm lên kế hoạch suốt hai tuần: từ việc sắp xếp mọi chi tiết, chọn nhẫn, đến tìm một nơi thật đặc biệt. Và cuối cùng, chàng chọn Đồi Ba Cây Thông – Đà Lạt, nơi chàng sẽ ngỏ lời với cô gái của đời mình.
+
+Thật may mắn, khoảnh khắc ấy chỉ có ba người: chàng, nàng và một anh quay phim. Giữa không gian tĩnh lặng của núi đồi, sông suối và bầu trời cao rộng, chàng quỳ xuống trao lời hẹn ước. Cảnh vật hôm ấy đẹp đến lạ — như thể trời đất cũng lặng yên để chứng kiến giây phút thiêng liêng của hai trái tim nhỏ bé tìm thấy nhau.
+
+Khi nàng gật đầu, gió khẽ lay, mây trôi chậm lại, và cả thế giới dường như chỉ còn lại hai người. Nơi đây — Đồi Ba Cây Thông — đã trở thành nhân chứng cho lời hứa trọn đời, mở ra một hành trình mới, nơi chàng và nàng nắm tay nhau đi qua mọi mùa yêu thương.</p>
+                                <span class="timeline-date">12/10/2025</span>
+                            </div>
+                        </div>
+                    </div>
+
+                     <div class="timeline-item">
+                        <div class="timeline-content">
+                            <div class="timeline-image">
+                                <div class="image-quad-container">
+                                    <div class="quad-image">
+                                        <img src="assets/images/60x90sua.jpg" alt="Lần đầu gặp 1" loading="lazy">
+                                    </div>
+                                    <div class="quad-image">
+                                        <img src="assets/images/0L5A8607.jpg" alt="Lần đầu gặp 2" loading="lazy">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="timeline-text">
+                                <div class="timeline-marker">
+                                    <i class="fas fa-heart"></i>
+                                </div>
+                                <h3>Ngày chung đôi</h3>
+                                <p>Tiếng trái tim đôi ta đập thật nhanh, thì thầm những lời yêu thương… ngày tình về chung đôi.
+Sau bao tháng ngày chờ đợi, cuối cùng khoảnh khắc hạnh phúc ấy cũng đã đến. Cảm ơn anh vì chúng ta luôn là một phần không thể thiếu trong cuộc sống của nhau. Em và anh không chỉ là người yêu, mà còn là tri kỷ — cùng sẻ chia niềm vui, nỗi buồn và mọi chặng đường phía trước.
+
+Ngày hôm nay, em trở thành cô dâu của anh. Và mai sau, em sẽ là người cùng anh xây dựng tổ ấm, nuôi dưỡng những đứa con của tình yêu chúng mình.</p>
+                                <span class="timeline-date">2026</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Photo Gallery -->
+        <section class="section gallery-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Khoảnh Khắc Yêu Thương</h2>
+                    <p class="section-subtitle">Những bức ảnh lưu giữ kỷ niệm đẹp nhất của chúng tôi</p>
+                </div>
+
+                <div class="gallery-grid">
+                    <!-- Gallery Item 1 - 2 ảnh -->
+                    <div class="gallery-item">
+                        <div class="gallery-double">
+                            <div class="gallery-img-container left">
+                                <img src="assets/images/60x90sua.jpg" alt="Khoảnh khắc 1" loading="lazy">
+                                <div class="gallery-overlay">
+                                    <i class="fas fa-search-plus"></i>
+                                </div>
+                            </div>
+                            <div class="gallery-img-container right">
+                                <img src="assets/images/0L5A8607.jpg" alt="Khoảnh khắc 2" loading="lazy">
+                                <div class="gallery-overlay">
+                                    <i class="fas fa-search-plus"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gallery Item 2 - 2 ảnh -->
+                    <div class="gallery-item">
+                        <div class="gallery-double">
+                            <div class="gallery-img-container left">
+                                <img src="assets/images/0L5A8606.jpg" alt="Khoảnh khắc 3" loading="lazy">
+                                <div class="gallery-overlay">
+                                    <i class="fas fa-search-plus"></i>
+                                </div>
+                            </div>
+                            <div class="gallery-img-container right">
+                                <img src="assets/images/0L5A8593.jpg" alt="Khoảnh khắc 4" loading="lazy">
+                                <div class="gallery-overlay">
+                                    <i class="fas fa-search-plus"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gallery Item 3 - 2 ảnh (thêm ảnh mới) -->
+                    <div class="gallery-item">
+                        <div class="gallery-double">
+                            <div class="gallery-img-container left">
+                                <img src="assets/images/0L5A8586.jpg" alt="Khoảnh khắc 5" loading="lazy">
+                                <div class="gallery-overlay">
+                                    <i class="fas fa-search-plus"></i>
+                                </div>
+                            </div>
+                            <div class="gallery-img-container right">
+                                <img src="assets/images/0L5A8527.jpg" alt="Khoảnh khắc 6" loading="lazy">
+                                <div class="gallery-overlay">
+                                    <i class="fas fa-search-plus"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gallery Item 4 - 2 ảnh (thêm ảnh mới) -->
+                    <div class="gallery-item">
+                        <div class="gallery-double">
+                            <div class="gallery-img-container left">
+                                <img src="assets/images/0L5A8311.jpg" alt="Khoảnh khắc 7" loading="lazy">
+                                <div class="gallery-overlay">
+                                    <i class="fas fa-search-plus"></i>
+                                </div>
+                            </div>
+                            <div class="gallery-img-container right">
+                                <img src="assets/images/0L5A8362.jpg" alt="Khoảnh khắc 8" loading="lazy">
+                                <div class="gallery-overlay">
+                                    <i class="fas fa-search-plus"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                     <div class="gallery-item">
+                        <div class="gallery-double">
+                            <div class="gallery-img-container left">
+                                <img src="assets/images/0L5A8410.jpg" alt="Khoảnh khắc 7" loading="lazy">
+                                <div class="gallery-overlay">
+                                    <i class="fas fa-search-plus"></i>
+                                </div>
+                            </div>
+                            <div class="gallery-img-container right">
+                                <img src="assets/images/0L5A8311.jpg" alt="Khoảnh khắc 8" loading="lazy">
+                                <div class="gallery-overlay">
+                                    <i class="fas fa-search-plus"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                     <div class="gallery-item">
+                        <div class="gallery-double">
+                            <div class="gallery-img-container left">
+                                <img src="assets/images/0L5A8270.jpg" alt="Khoảnh khắc 7" loading="lazy">
+                                <div class="gallery-overlay">
+                                    <i class="fas fa-search-plus"></i>
+                                </div>
+                            </div>
+                            <div class="gallery-img-container right">
+                                <img src="assets/images/0L5A8480.jpg" alt="Khoảnh khắc 8" loading="lazy">
+                                <div class="gallery-overlay">
+                                    <i class="fas fa-search-plus"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Wedding Details -->
+        <section class="section details-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Thông Tin Tiệc Cưới</h2>
+                    <p class="section-subtitle">Mong được đón tiếp và cùng chia vui với bạn</p>
+                </div>
+
+                <div class="details-cards">
+                    <div class="detail-card">
+                        <div class="card-icon">
+                            <i class="fas fa-church"></i>
+                        </div>
+                        <h3>Lễ Thành Hôn</h3>
+                        <p class="detail-time">10:30 - 15:30</p>
+                        <p class="detail-date">Thứ hai, 30/03/2026</p>
+                        <p class="detail-location">Nhà trai</p>
+                        <p class="detail-address">Thôn Tân Thượng - Thạch Hà - Hà Tĩnh</p>
+                    </div>
+
+                    <div class="detail-card highlight">
+                        <div class="card-icon">
+                            <i class="fas fa-glass-cheers"></i>
+                        </div>
+                        <h3>Lễ Vu Quy</h3>
+                        <p class="detail-time">9:30 - 14:00</p>
+                        <p class="detail-date">Chủ Nhật, 22/3/2026</p>
+                        <p class="detail-location">Nhà hàng Thanh Trà</p>
+                        <p class="detail-address">Hai Bà Trưng, Liên Hương, Lâm Đồng</p>
+                    </div>
+
+                    <div class="detail-card">
+                        <div class="card-icon">
+                            <i class="fas fa-church"></i>
+                        </div>
+                        <h3>Tiệc Mừng</h3>
+                        <p class="detail-time">18:00 - 21:30</p>
+                        <p class="detail-date">Chủ nhật, 19/04/2026</p>
+                        <p class="detail-location">Queen Plaza Tân Bình</p>
+                        <p class="detail-address">91B2 Phạm Văn Hai, Phường Tân Sơn Hoà, Ho Chi Minh City</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- RSVP Section -->
+<section class="section rsvp-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Xác Nhận Tham Dự</h2>
+            <p class="section-subtitle">Vui lòng cho chúng tôi biết bạn có thể tham dự không</p>
+        </div>
+
+        <div class="rsvp-stats">
+            <div class="stat-item">
+                <i class="fas fa-user-friends"></i>
+                <span class="stat-number" id="totalGuests">0</span>
+                <span class="stat-label">Khách đã xác nhận</span>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-glass-cheers"></i>
+                <span class="stat-number" id="attendingGuests">0</span>
+                <span class="stat-label">Sẽ tham dự</span>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-heart"></i>
+                <span class="stat-number" id="confirmedGroups">0</span>
+                <span class="stat-label">Nhóm đã xác nhận</span>
+            </div>
+        </div>
+
+        <div class="rsvp-form-container">
+            <form id="rsvpForm" class="rsvp-form">
+                <div class="form-group">
+                    <label for="name">Họ và tên *</label>
+                    <input type="text" id="name" name="name" required placeholder="Nhập họ tên của bạn">
+                </div>
+                
+                <div class="form-group">
+                    <label for="relationship">Mối quan hệ với cô dâu/chú rể *</label>
+                    <select id="relationship" name="relationship" required>
+                        <option value="">Chọn mối quan hệ</option>
+                        <option value="Bạn bè">Bạn bè</option>
+                        <option value="Đồng nghiệp">Đồng nghiệp</option>
+                        <option value="Họ hàng">Họ hàng</option>
+                        <option value="Học cùng">Học cùng</option>
+                        <option value="Khác">Khác</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="attendance">Bạn có tham dự được không? *</label>
+                    <div class="attendance-options">
+                        <label class="option-label">
+                            <input type="radio" name="attendance" value="Có" required>
+                            <span class="option-text">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Có, tôi sẽ tham dự</span>
+                            </span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="attendance" value="Không">
+                            <span class="option-text">
+                                <i class="fas fa-times-circle"></i>
+                                <span>Rất tiếc, tôi không thể tham dự</span>
+                            </span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="attendance" value="Chưa chắc chắn">
+                            <span class="option-text">
+                                <i class="fas fa-question-circle"></i>
+                                <span>Tôi sẽ xác nhận sau</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group guest-count-group">
+                    <label for="guestCount">Số người tham dự (bao gồm bạn) *</label>
+                    <div class="guest-counter">
+                        <button type="button" class="counter-btn minus" aria-label="Giảm số lượng">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <input type="number" id="guestCount" name="guestCount" value="1" min="1" max="10" readonly>
+                        <button type="button" class="counter-btn plus" aria-label="Tăng số lượng">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- THÊM PHẦN MỚI: Chọn địa điểm tham dự -->
+                <div class="form-group" id="locationGroup">
+                    <label for="location">Tham dự ở đâu? *</label>
+                    <div class="location-options">
+                        <label class="location-option">
+                            <input type="checkbox" name="location" value="Nhà trai">
+                            <span class="location-text">
+                                <i class="fas fa-home"></i>
+                                <span>Nhà trai (Hà Tĩnh)</span>
+                                <small class="location-date">30/03/2026</small>
+                            </span>
+                        </label>
+                        <label class="location-option">
+                            <input type="checkbox" name="location" value="Nhà gái">
+                            <span class="location-text">
+                                <i class="fas fa-heart"></i>
+                                <span>Nhà gái (Lâm Đồng)</span>
+                                <small class="location-date">22/03/2026</small>
+                            </span>
+                        </label>
+                        <label class="location-option">
+                            <input type="checkbox" name="location" value="Báo hỷ">
+                            <span class="location-text">
+                                <i class="fas fa-champagne-glasses"></i>
+                                <span>Tiệc báo hỷ (TP.HCM)</span>
+                                <small class="location-date">19/04/2026</small>
+                            </span>
+                        </label>
+                    </div>
+                    <small class="hint">Có thể chọn nhiều địa điểm</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Lời nhắn gửi đến cô dâu chú rể</label>
+                    <textarea id="message" name="message" rows="3" 
+                              placeholder="Gửi lời chúc mừng hoặc lời nhắn yêu thương..."></textarea>
+                </div>
+
+                <div class="form-footer">
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>Gửi xác nhận</span>
+                    </button>
+                    <p class="form-note">Thông tin của bạn sẽ được bảo mật và chỉ sử dụng cho mục đích tổ chức tiệc.</p>
+                </div>
+            </form>
+
+            <div class="confirmation-message" id="confirmationMessage">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3>Cảm ơn bạn đã xác nhận!</h3>
+                <p>Chúng tôi đã nhận được thông tin của bạn và rất mong được đón tiếp bạn trong ngày trọng đại.</p>
+                <div class="confirmation-details" id="confirmationDetails"></div>
+                <button class="btn-new-response" id="newResponseBtn">
+                    <i class="fas fa-plus"></i>
+                    <span>Gửi xác nhận mới</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="couple-signature">
+                    <div class="signature groom">
+                        <p>Đình Hữu</p>
+                    </div>
+                    <div class="heart-signature">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="signature bride">
+                        <p>Bích Ngân</p>
+                    </div>
+                </div>
+                
+                <p class="footer-thanks">Chân thành cảm ơn sự hiện diện và những lời chúc của mọi người!</p>
+                
+                <p class="copyright">© 2026 sản phẩm của chồng làm ^-^.<br> Made with <i class="fas fa-heart"></i> forever.</p>
+            </div>
+        </footer>
+    </main>
+
+    <!-- Image Modal -->
+    <div id="imageModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" id="closeImageModal" aria-label="Đóng">
+                <i class="fas fa-times"></i>
+            </button>
+            <img id="modalImage" src="" alt="">
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
