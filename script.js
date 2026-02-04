@@ -2,16 +2,16 @@
 class ImagePreloader {
     constructor() {
         this.images = [
-            'assets/images/0L5A8396.jpg',
-            'assets/images/0L5A8270.jpg',
-            'assets/images/0L5A8480.jpg',
-            'assets/images/0L5A8607.jpg',
-            'assets/images/60x90sua.jpg',
-            'assets/images/CM3786.jpg',
-            'assets/images/CM1605.jpg',
-            'assets/images/CM0013.jpg',
-            'assets/images/0L5A8527.jpg',
-            'assets/images/0L5A8593.jpg'
+            'assets/images/0L5A8396.JPG',
+            'assets/images/0L5A8270.JPG',
+            'assets/images/0L5A8480.JPG',
+            'assets/images/0L5A8607.JPG',
+            'assets/images/60x90sua.JPG',
+            'assets/images/CM3786.JPG',
+            'assets/images/CM1605.JPG',
+            'assets/images/CM0013.JPG',
+            'assets/images/0L5A8527.JPG',
+            'assets/images/0L5A8593.JPG'
         ];
     }
 
