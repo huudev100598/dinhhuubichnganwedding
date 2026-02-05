@@ -1,71 +1,81 @@
-// ===== UTILITY CLASSES =====
-class ImagePreloader {
-    constructor() {
-        this.images = [
-            'assets/images/0L5A8396.JPG',
-            'assets/images/0L5A8270.JPG',
-            'assets/images/0L5A8480.JPG',
-            'assets/images/0L5A8607.JPG',
-            'assets/images/60x90sua.JPG',
-            'assets/images/CM3786.JPG',
-            'assets/images/CM1605.JPG',
-            'assets/images/CM0013.JPG',
-            'assets/images/0L5A8527.JPG',
-            'assets/images/0L5A8593.JPG'
-        ];
-    }
+// ===== OPTIMIZED PERFORMANCE =====
 
-    preload() {
-        this.images.forEach(src => {
-            const img = new Image();
-            img.src = src;
-            img.crossOrigin = 'anonymous'; // Giảm warning preload credentials mode
-            console.log('[Preload] Bắt đầu tải:', src.split('/').pop());
-        });
-    }
-}
-
-class StarsBackground {
+class OptimizedStarsBackground {
     constructor() {
         this.canvas = document.getElementById('stars');
         if (!this.canvas) return;
         
         this.ctx = this.canvas.getContext('2d');
         this.stars = [];
+        this.animationFrame = null;
+        this.lastTime = 0;
+        this.frameInterval = 1000 / 30; // 30 FPS thay vì 60 FPS
+        this.isAnimating = true;
+        
         this.init();
     }
 
     init() {
         this.resize();
         this.createStars();
-        this.animate();
+        this.startAnimation();
         
-        window.addEventListener('resize', () => this.resize());
+        // Debounce resize event
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => this.resize(), 100);
+        });
+        
+        // Pause when tab is not visible
+        document.addEventListener('visibilitychange', () => {
+            this.isAnimating = !document.hidden;
+            if (this.isAnimating && !this.animationFrame) {
+                this.startAnimation();
+            } else if (!this.isAnimating && this.animationFrame) {
+                cancelAnimationFrame(this.animationFrame);
+                this.animationFrame = null;
+            }
+        });
     }
 
     resize() {
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
-        this.createStars();
+        
+        // Giảm số lượng sao trên mobile
+        const isMobile = window.innerWidth <= 768;
+        const count = isMobile ? 50 : 100;
+        this.createStars(count);
     }
 
-    createStars() {
-        const count = Math.min(150, Math.floor((window.innerWidth * window.innerHeight) / 5000));
+    createStars(count = 100) {
         this.stars = [];
         
         for (let i = 0; i < count; i++) {
             this.stars.push({
                 x: Math.random() * this.canvas.width,
                 y: Math.random() * this.canvas.height,
-                size: Math.random() * 2 + 0.5,
-                speed: Math.random() * 0.5 + 0.2,
-                opacity: Math.random() * 0.5 + 0.3
+                size: Math.random() * 1.5 + 0.5,
+                speed: Math.random() * 0.3 + 0.1,
+                opacity: Math.random() * 0.4 + 0.2
             });
         }
     }
 
-    animate() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    animate(timestamp) {
+        if (!this.isAnimating) return;
+        
+        if (timestamp - this.lastTime < this.frameInterval) {
+            this.animationFrame = requestAnimationFrame((t) => this.animate(t));
+            return;
+        }
+        
+        this.lastTime = timestamp;
+        
+        // Clear with semi-transparent for trail effect (performance friendly)
+        this.ctx.fillStyle = 'rgba(15, 18, 32, 0.1)';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
         this.stars.forEach(star => {
             star.y += star.speed;
@@ -80,11 +90,91 @@ class StarsBackground {
             this.ctx.fill();
         });
         
-        requestAnimationFrame(() => this.animate());
+        this.animationFrame = requestAnimationFrame((t) => this.animate(t));
+    }
+
+    startAnimation() {
+        if (this.animationFrame) {
+            cancelAnimationFrame(this.animationFrame);
+        }
+        this.animationFrame = requestAnimationFrame((t) => this.animate(t));
+    }
+
+    stopAnimation() {
+        this.isAnimating = false;
+        if (this.animationFrame) {
+            cancelAnimationFrame(this.animationFrame);
+            this.animationFrame = null;
+        }
     }
 }
 
-class HeroSlideshow {
+class OptimizedPetals {
+    constructor() {
+        this.container = document.querySelector('.petals-container');
+        this.petals = [];
+        this.maxPetals = 6;
+        this.isMobile = window.innerWidth <= 768;
+        
+        if (this.container && !this.isMobile) {
+            this.init();
+        }
+    }
+
+    init() {
+        // Tạo cánh hoa với độ trễ
+        for (let i = 0; i < this.maxPetals; i++) {
+            setTimeout(() => this.createPetal(), i * 800);
+        }
+        
+        // Setup visibility check
+        document.addEventListener('visibilitychange', () => {
+            this.toggleAnimations(!document.hidden);
+        });
+    }
+
+    createPetal() {
+        if (this.petals.length >= this.maxPetals) return;
+        
+        const petal = document.createElement('div');
+        petal.className = 'petal';
+        
+        const size = Math.random() * 10 + 4;
+        const left = Math.random() * 100;
+        const duration = Math.random() * 10 + 8;
+        
+        petal.style.cssText = `
+            width: ${size}px; height: ${size}px;
+            left: ${left}vw;
+            animation: fall ${duration}s linear infinite;
+            will-change: transform;
+        `;
+        
+        this.container.appendChild(petal);
+        this.petals.push(petal);
+        
+        // Remove petal after animation
+        setTimeout(() => {
+            if (petal.parentNode) {
+                petal.remove();
+                this.petals = this.petals.filter(p => p !== petal);
+                setTimeout(() => this.createPetal(), 1000);
+            }
+        }, duration * 1000);
+    }
+
+    toggleAnimations(isVisible) {
+        this.petals.forEach(petal => {
+            if (isVisible) {
+                petal.style.animationPlayState = 'running';
+            } else {
+                petal.style.animationPlayState = 'paused';
+            }
+        });
+    }
+}
+
+class OptimizedHeroSlideshow {
     constructor() {
         this.slides = document.querySelectorAll('.slide');
         this.dotsContainer = document.querySelector('.slide-dots');
@@ -92,6 +182,7 @@ class HeroSlideshow {
         this.nextBtn = document.querySelector('.next-btn');
         this.currentIndex = 0;
         this.interval = null;
+        this.isTransitioning = false;
         
         if (this.slides.length > 0) {
             this.init();
@@ -99,16 +190,27 @@ class HeroSlideshow {
     }
 
     init() {
-        this.slides.forEach(slide => {
-            const bg = slide.getAttribute('data-bg');
-            if (bg) {
-                slide.style.backgroundImage = `url('${bg}')`;
-            }
-        });
+        // Preload first image only
+        const firstSlide = this.slides[0];
+        const bg = firstSlide.getAttribute('data-bg');
+        if (bg) {
+            this.preloadImage(bg).then(() => {
+                firstSlide.style.backgroundImage = `url('${bg}')`;
+            });
+        }
 
         this.createDots();
         this.setupControls();
         this.startAutoPlay();
+    }
+
+    async preloadImage(url) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.src = url;
+            img.onload = resolve;
+            img.onerror = resolve;
+        });
     }
 
     createDots() {
@@ -130,28 +232,52 @@ class HeroSlideshow {
         if (this.nextBtn) {
             this.nextBtn.addEventListener('click', () => this.nextSlide());
         }
-    }
-
-    startAutoPlay() {
-        this.interval = setInterval(() => this.nextSlide(), 5000);
         
+        // Pause auto-play on hover
         const slideshow = document.querySelector('.background-slideshow');
         if (slideshow) {
             slideshow.addEventListener('mouseenter', () => clearInterval(this.interval));
             slideshow.addEventListener('mouseleave', () => {
-                this.interval = setInterval(() => this.nextSlide(), 5000);
+                this.interval = setInterval(() => this.nextSlide(), 6000);
             });
         }
     }
 
+    startAutoPlay() {
+        this.interval = setInterval(() => this.nextSlide(), 6000);
+    }
+
     goToSlide(index) {
+        if (this.isTransitioning) return;
+        
+        this.isTransitioning = true;
+        
         this.slides[this.currentIndex].classList.remove('active');
         this.updateDot(this.currentIndex, false);
         
         this.currentIndex = (index + this.slides.length) % this.slides.length;
         
-        this.slides[this.currentIndex].classList.add('active');
+        // Lazy load image before showing
+        const nextSlide = this.slides[this.currentIndex];
+        const bg = nextSlide.getAttribute('data-bg');
+        
+        if (bg && !nextSlide.style.backgroundImage) {
+            this.preloadImage(bg).then(() => {
+                nextSlide.style.backgroundImage = `url('${bg}')`;
+                this.showSlide(nextSlide);
+            });
+        } else {
+            this.showSlide(nextSlide);
+        }
+    }
+
+    showSlide(slide) {
+        slide.classList.add('active');
         this.updateDot(this.currentIndex, true);
+        
+        setTimeout(() => {
+            this.isTransitioning = false;
+        }, 1500);
     }
 
     prevSlide() {
@@ -159,7 +285,9 @@ class HeroSlideshow {
     }
 
     nextSlide() {
-        this.goToSlide(this.currentIndex + 1);
+        if (!this.isTransitioning) {
+            this.goToSlide(this.currentIndex + 1);
+        }
     }
 
     updateDot(index, isActive) {
@@ -170,10 +298,9 @@ class HeroSlideshow {
     }
 }
 
-// ===== RSVP MANAGER =====
+// ===== RSVP MANAGER (giữ nguyên) =====
 class RSVPManager {
     constructor() {
-        // THAY URL NÀY BẰNG URL WEB APP MỚI NHẤT (từ deployment "Bất kỳ ai")
         this.SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz3j7iYQ5ur_TMHNIMiGdhb0ejLSWKmV4yIMysSL8-5mxV2VLkxbGg9KmKC6lkL-83nlg/exec';
         
         this.stats = {
@@ -383,7 +510,6 @@ class RSVPManager {
         while (attempt <= maxRetries) {
             try {
                 console.log(`[SEND] Thử gửi POST lần ${attempt + 1} đến:`, this.SCRIPT_URL);
-                console.log('[SEND] Payload:', JSON.stringify(data, null, 2));
                 
                 const response = await fetch(this.SCRIPT_URL, {
                     method: 'POST',
@@ -548,76 +674,98 @@ class RSVPManager {
     }
 }
 
-// ===== MAIN APPLICATION =====
-class WeddingInvitation {
+// ===== OPTIMIZED WEDDING INVITATION =====
+class OptimizedWeddingInvitation {
     constructor() {
         this.music = document.getElementById('weddingMusic');
         this.musicBtn = document.getElementById('musicToggle');
         this.loadingScreen = document.getElementById('loadingScreen');
         this.isMobile = window.innerWidth <= 768;
+        this.isLowEnd = this.detectLowEndDevice();
         
         this.init();
     }
 
+    detectLowEndDevice() {
+        const isAndroid = /android/i.test(navigator.userAgent);
+        const isIOS = /iphone|ipod/i.test(navigator.userAgent);
+        const memory = navigator.deviceMemory || 4;
+        
+        return (isAndroid || isIOS) && memory < 4;
+    }
+
     init() {
-        console.log('💒 Wedding Invitation initializing...');
+        console.log('🚀 Optimized Wedding Invitation initializing...');
         
-        new ImagePreloader().preload();
-        new StarsBackground();
-        new HeroSlideshow();
-        new RSVPManager();
+        // Preload critical images only
+        this.preloadCriticalImages();
         
-        this.setupMusic();
-        this.setupEventListeners();
-        this.createPetals();
+        // Initialize optimized components
+        this.starsBackground = new OptimizedStarsBackground();
+        this.petals = new OptimizedPetals();
+        this.slideshow = new OptimizedHeroSlideshow();
+        this.rsvpManager = new RSVPManager();
+        
+        this.setupOptimizedEventListeners();
         this.setupScrollAnimations();
         this.setupGalleryAnimations();
         this.hideLoadingScreen();
         
-        if (this.isMobile) {
-            document.querySelectorAll('.petal').forEach(p => p.style.display = 'none');
-        }
-        
-        console.log('✅ Initialization complete!');
+        console.log('✅ Optimized initialization complete!');
     }
 
-    hideLoadingScreen() {
-        if (this.loadingScreen) {
-            setTimeout(() => {
-                this.loadingScreen.classList.add('hidden');
-                setTimeout(() => this.loadingScreen.style.display = 'none', 500);
-            }, 800);
-        }
-    }
-
-    setupMusic() {
-        if (!this.music || !this.musicBtn) return;
+    preloadCriticalImages() {
+        // Only preload first two slideshow images
+        const criticalImages = [
+            'assets/images/60x90sua.jpg',
+            'assets/images/0L5A8270.JPG'
+        ];
         
-        this.music.volume = 0.4;
-        
-        this.musicBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (this.music.paused) {
-                this.music.play().then(() => this.musicBtn.classList.add('playing'));
-            } else {
-                this.music.pause();
-                this.musicBtn.classList.remove('playing');
-            }
+        criticalImages.forEach(src => {
+            const img = new Image();
+            img.src = src;
+            img.loading = 'eager';
         });
-        
-        document.addEventListener('click', () => {
-            if (this.music.paused) {
-                this.music.play().then(() => this.musicBtn.classList.add('playing'));
-            }
-        }, { once: true });
     }
 
-    setupEventListeners() {
+    setupOptimizedEventListeners() {
+        // Music setup
+        if (this.music && this.musicBtn) {
+            this.music.volume = 0.4;
+            
+            this.musicBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (this.music.paused) {
+                    this.music.play().then(() => this.musicBtn.classList.add('playing'));
+                } else {
+                    this.music.pause();
+                    this.musicBtn.classList.remove('playing');
+                }
+            });
+            
+            // Auto-play music on first interaction
+            const playMusic = () => {
+                if (this.music.paused) {
+                    this.music.play().then(() => this.musicBtn.classList.add('playing'));
+                }
+                document.removeEventListener('click', playMusic);
+                document.removeEventListener('touchstart', playMusic);
+            };
+            
+            document.addEventListener('click', playMusic, { once: true });
+            document.addEventListener('touchstart', playMusic, { once: true });
+        }
+
+        // Scroll to story
         document.querySelector('.btn-scroll')?.addEventListener('click', (e) => {
             e.preventDefault();
-            document.querySelector('#story')?.scrollIntoView({ behavior: 'smooth' });
+            document.querySelector('#story')?.scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+            });
         });
 
+        // Modal close
         document.getElementById('closeImageModal')?.addEventListener('click', () => {
             document.getElementById('imageModal').style.display = 'none';
             document.body.style.overflow = 'auto';
@@ -628,6 +776,15 @@ class WeddingInvitation {
                 document.getElementById('imageModal').style.display = 'none';
                 document.body.style.overflow = 'auto';
             }
+        });
+        
+        // Debounce scroll events
+        let scrollTimeout;
+        window.addEventListener('scroll', () => {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                this.checkVisibleElements();
+            }, 100);
         });
     }
 
@@ -646,81 +803,156 @@ class WeddingInvitation {
         });
     }
 
-    createPetals() {
-        if (this.isMobile) return;
-        const container = document.querySelector('.petals-container');
-        if (!container) return;
+    checkVisibleElements() {
+        // Only check elements near viewport
+        const viewportHeight = window.innerHeight;
         
-        for (let i = 0; i < 8; i++) {
-            setTimeout(() => this.createSinglePetal(container), i * 400);
-        }
-    }
-
-    createSinglePetal(container) {
-        const petal = document.createElement('div');
-        petal.className = 'petal';
-        
-        const size = Math.random() * 12 + 6;
-        const left = Math.random() * 100;
-        const duration = Math.random() * 8 + 6;
-        
-        petal.style.cssText = `
-            width: ${size}px; height: ${size}px;
-            left: ${left}vw;
-            animation: fall ${duration}s linear infinite;
-        `;
-        
-        container.appendChild(petal);
-        
-        setTimeout(() => {
-            petal.remove();
-            this.createSinglePetal(container);
-        }, duration * 1000);
+        document.querySelectorAll('.timeline-item, .gallery-item').forEach(el => {
+            const rect = el.getBoundingClientRect();
+            if (rect.top < viewportHeight * 0.8) {
+                el.classList.add('visible');
+            }
+        });
     }
 
     setupScrollAnimations() {
+        // Intersection Observer with optimized settings
         const observer = new IntersectionObserver(entries => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('visible');
+                    
+                    // Unobserve after showing to save resources
+                    if (entry.target.classList.contains('gallery-item')) {
+                        observer.unobserve(entry.target);
+                    }
                 }
             });
-        }, { threshold: 0.1 });
+        }, { 
+            threshold: 0.1,
+            rootMargin: '50px 0px'
+        });
         
-        document.querySelectorAll('.timeline-item, .gallery-item, .detail-card, .rsvp-section')
-            .forEach(el => observer.observe(el));
+        // Only observe first few elements
+        const elements = document.querySelectorAll('.timeline-item, .gallery-item');
+        elements.forEach((el, index) => {
+            if (index < 8) { // Observe only 8 elements initially
+                observer.observe(el);
+            }
+        });
     }
-    // Thêm vào class WeddingInvitation hoặc cuối file script.js
-setupSwipeForDetails() {
-    if (!this.isMobile) return;
-    
-    const detailsCards = document.querySelector('.details-cards');
-    if (!detailsCards) return;
-    
-    let startX = 0;
-    let scrollLeft = 0;
-    
-    detailsCards.addEventListener('touchstart', (e) => {
-        startX = e.touches[0].pageX - detailsCards.offsetLeft;
-        scrollLeft = detailsCards.scrollLeft;
-    }, { passive: true });
-    
-    detailsCards.addEventListener('touchmove', (e) => {
-        if (!startX) return;
-        e.preventDefault();
-        const x = e.touches[0].pageX - detailsCards.offsetLeft;
-        const walk = (x - startX) * 2;
-        detailsCards.scrollLeft = scrollLeft - walk;
-    }, { passive: false });
-}
+
+    hideLoadingScreen() {
+        if (this.loadingScreen) {
+            setTimeout(() => {
+                this.loadingScreen.classList.add('hidden');
+                setTimeout(() => {
+                    this.loadingScreen.style.display = 'none';
+                    document.body.classList.remove('loading');
+                }, 500);
+            }, 800);
+        }
+    }
 }
 
-// Khởi chạy ứng dụng
+// ===== LAZY LOADING OPTIMIZATION =====
+function setupLazyLoading() {
+    const lazyImages = document.querySelectorAll('img[loading="lazy"]');
+    
+    if ('IntersectionObserver' in window) {
+        const imageObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    // Load image if it has data-src attribute
+                    if (img.dataset.src) {
+                        img.src = img.dataset.src;
+                        img.removeAttribute('data-src');
+                    }
+                    imageObserver.unobserve(img);
+                }
+            });
+        }, {
+            rootMargin: '100px 0px',
+            threshold: 0.01
+        });
+        
+        lazyImages.forEach(img => {
+            if (img.dataset.src) {
+                imageObserver.observe(img);
+            }
+        });
+    }
+}
+
+// ===== INITIALIZATION WITH PERFORMANCE OPTIMIZATIONS =====
 document.addEventListener('DOMContentLoaded', () => {
-    try {
-        window.weddingApp = new WeddingInvitation();
-        console.log('💒 Ứng dụng đã khởi động thành công!');
-    } catch (err) {
-        console.error('❌ Application failed to start:', err);
+    // Initialize with slight delay to prioritize content rendering
+    setTimeout(() => {
+        try {
+            window.weddingApp = new OptimizedWeddingInvitation();
+            
+            // Setup lazy loading for images
+            setupLazyLoading();
+            
+            console.log('🎉 Ứng dụng đã khởi động tối ưu!');
+        } catch (err) {
+            console.error('❌ Application failed to start:', err);
+            document.body.classList.remove('loading');
+            
+            // Fallback: hide loading screen even if error
+            const loadingScreen = document.getElementById('loadingScreen');
+            if (loadingScreen) {
+                loadingScreen.style.display = 'none';
+            }
+        }
+    }, 100);
+});
+
+// ===== ADDITIONAL PERFORMANCE OPTIMIZATIONS =====
+
+// Throttle resize events
+let resizeThrottle;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeThrottle);
+    resizeThrottle = setTimeout(() => {
+        if (window.weddingApp && window.weddingApp.starsBackground) {
+            window.weddingApp.starsBackground.resize();
+        }
+    }, 200);
+});
+
+// Optimize for visibility changes
+document.addEventListener('visibilitychange', () => {
+    const isHidden = document.hidden;
+    
+    if (isHidden) {
+        // Pause animations and music when tab is not visible
+        if (window.weddingApp && window.weddingApp.starsBackground) {
+            window.weddingApp.starsBackground.stopAnimation();
+        }
+        
+        const music = document.getElementById('weddingMusic');
+        if (music && !music.paused) {
+            music.pause();
+        }
+    } else {
+        // Resume animations when tab becomes visible
+        if (window.weddingApp && window.weddingApp.starsBackground) {
+            window.weddingApp.starsBackground.startAnimation();
+        }
+    }
+});
+
+// Optimize for page load
+window.addEventListener('load', () => {
+    // Remove loading class after everything is loaded
+    document.body.classList.remove('loading');
+    
+    // Log performance metrics
+    if ('performance' in window) {
+        const perfData = window.performance.timing;
+        const loadTime = perfData.loadEventEnd - perfData.navigationStart;
+        console.log(`📊 Page loaded in ${loadTime}ms`);
     }
 });
