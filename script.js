@@ -690,6 +690,29 @@ class WeddingInvitation {
         document.querySelectorAll('.timeline-item, .gallery-item, .detail-card, .rsvp-section')
             .forEach(el => observer.observe(el));
     }
+    // Thêm vào class WeddingInvitation hoặc cuối file script.js
+setupSwipeForDetails() {
+    if (!this.isMobile) return;
+    
+    const detailsCards = document.querySelector('.details-cards');
+    if (!detailsCards) return;
+    
+    let startX = 0;
+    let scrollLeft = 0;
+    
+    detailsCards.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].pageX - detailsCards.offsetLeft;
+        scrollLeft = detailsCards.scrollLeft;
+    }, { passive: true });
+    
+    detailsCards.addEventListener('touchmove', (e) => {
+        if (!startX) return;
+        e.preventDefault();
+        const x = e.touches[0].pageX - detailsCards.offsetLeft;
+        const walk = (x - startX) * 2;
+        detailsCards.scrollLeft = scrollLeft - walk;
+    }, { passive: false });
+}
 }
 
 // Khởi chạy ứng dụng

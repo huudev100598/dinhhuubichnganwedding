@@ -492,28 +492,27 @@ h1, h2, h3, h4, .section-title {
     left: 0;
     width: 100%;
     height: 100%;
-    display: flex; /* Thay grid bằng flexbox */
-    gap: 1px; /* Giảm gap để không bị khuyết */
-    background: transparent; /* Xóa background */
+    display: flex;
+    gap: 1px;
+    background: transparent;
 }
 
 .quad-image {
     position: relative;
     overflow: hidden;
-    flex: 1; /* Mỗi ảnh chiếm 50% */
-    width: 50%; /* Đảm bảo 2 ảnh chiếm đầy đủ */
+    flex: 1;
+    width: 50%;
     height: 100%;
-    background: transparent; /* Đảm bảo không có background */
+    background: transparent;
 }
 
-/* FIX: Đổi object-fit thành contain để hiển thị full ảnh */
 .quad-image img {
     width: 100%;
     height: 100%;
-    object-fit: contain; /* HIỂN THỊ TOÀN BỘ ẢNH */
+    object-fit: contain;
     object-position: center;
     display: block;
-    background: rgba(10, 13, 23, 0.5); /* Thêm nền cho phần trống */
+    background: rgba(10, 13, 23, 0.5);
     transition: transform 0.5s ease;
 }
 
@@ -547,7 +546,7 @@ h1, h2, h3, h4, .section-title {
     box-shadow: var(--shadow-gold);
 }
 
-.timeline-text h3,h4 {
+.timeline-text h3, h4 {
     font-size: 1.8rem;
     margin-bottom: 1rem;
     color: var(--primary-gold);
@@ -681,67 +680,38 @@ h1, h2, h3, h4, .section-title {
     50% { transform: scale(1.1); }
 }
 
-/* Hiệu ứng cho từng gallery item khi vào viewport */
-.gallery-item:nth-child(1) { transition-delay: 0.1s; }
-.gallery-item:nth-child(2) { transition-delay: 0.2s; }
-.gallery-item:nth-child(3) { transition-delay: 0.3s; }
-.gallery-item:nth-child(4) { transition-delay: 0.4s; }
-
-/* Border và shadow cho container */
-.gallery-img-container {
-    box-shadow: var(--shadow-md);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.gallery-img-container:hover {
-    box-shadow: var(--shadow-lg);
-    border-color: var(--primary-gold);
-}
-
-/* Thêm gradient overlay cho ảnh */
-.gallery-img-container::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-        to bottom,
-        rgba(15, 18, 32, 0) 60%,
-        rgba(15, 18, 32, 0.4) 100%
-    );
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    pointer-events: none;
-}
-
-.gallery-img-container:hover::after {
-    opacity: 1;
-}
-
 /* ===== DETAILS SECTION ===== */
 .details-section {
     background: rgba(255, 255, 255, 0.03);
     width: 100%;
+    overflow: hidden;
 }
 
 .details-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
+    display: flex; /* Thay grid bằng flex */
+    justify-content: center; /* Căn giữa */
+    align-items: stretch; /* Các item cùng chiều cao */
+    gap: 1.5rem;
     margin-top: 3rem;
     width: 100%;
+    flex-wrap: nowrap; /* KHÔNG xuống dòng */
+    overflow-x: visible; /* Cho phép hiển thị đầy đủ */
 }
 
 .detail-card {
     background: rgba(255, 255, 255, 0.05);
     border-radius: var(--radius-md);
-    padding: 2.5rem;
+    padding: 2rem 1.5rem;
     text-align: center;
     border: 1px solid rgba(255, 255, 255, 0.1);
     transition: var(--transition);
-    width: 100%;
+    flex: 1; /* Các item co giãn đều */
+    min-width: 280px; /* Tối thiểu cho desktop */
+    max-width: 350px; /* Tối đa cho desktop */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
 }
 
 .detail-card:hover {
@@ -756,29 +726,39 @@ h1, h2, h3, h4, .section-title {
 }
 
 .card-icon {
-    width: 70px;
-    height: 70px;
+    width: 60px;
+    height: 60px;
     background: var(--primary-gold);
     border-radius: var(--radius-round);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 1.5rem;
-    font-size: 1.8rem;
+    margin: 0 auto 1.2rem;
+    font-size: 1.5rem;
     color: var(--white);
+    flex-shrink: 0; /* Không bị co lại */
 }
 
 .detail-card h3, h4 {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     margin-bottom: 1rem;
     color: var(--primary-gold);
+    line-height: 1.3;
+    font-weight: 600;
+    display: -webkit-box;
+    -webkit-line-clamp: 1; /* Chỉ 1 dòng */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
 }
 
 .detail-time {
-    font-size: 1.3rem;
+    font-size: 1.1rem;
     font-weight: 600;
     margin: 0.5rem 0;
     color: var(--white);
+    line-height: 1.3;
 }
 
 .detail-date, .detail-location {
@@ -787,10 +767,16 @@ h1, h2, h3, h4, .section-title {
 }
 
 .detail-address {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--gray);
-    margin-top: 1rem;
+    margin-top: 0.8rem;
     line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Giới hạn 3 dòng */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
 }
 
 /* ===== RSVP SECTION ===== */
@@ -799,23 +785,35 @@ h1, h2, h3, h4, .section-title {
     width: 100%;
 }
 
+/* ===== RSVP STATS - LUÔN TRÊN 1 DÒNG ===== */
 .rsvp-stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    gap: 1.5rem;
     margin-bottom: 3rem;
-    max-width: 800px;
+    max-width: 900px;
     margin-left: auto;
     margin-right: auto;
+    flex-wrap: nowrap;
+    overflow-x: visible;
+    width: 100%;
 }
 
 .stat-item {
     background: rgba(255, 255, 255, 0.05);
     border-radius: var(--radius-md);
-    padding: 2rem;
+    padding: 1.5rem 1rem;
     text-align: center;
     border: 1px solid rgba(255, 255, 255, 0.1);
     transition: var(--transition);
+    flex: 1;
+    min-width: 120px;
+    max-width: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .stat-item:hover {
@@ -825,57 +823,307 @@ h1, h2, h3, h4, .section-title {
 }
 
 .stat-item i {
-    font-size: 2.5rem;
+    font-size: 2rem;
     color: var(--primary-gold);
-    margin-bottom: 1rem;
-    display: block;
+    margin-bottom: 0.8rem;
 }
 
 .stat-number {
-    display: block;
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-weight: 700;
     color: var(--white);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.3rem;
+    line-height: 1;
     font-family: var(--font-heading);
 }
 
 .stat-label {
     font-size: 0.9rem;
     color: var(--gray);
-    display: block;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
+/* ===== LOCATION STATS ===== */
+.location-stats {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    gap: 1.5rem;
+    margin: 2rem auto;
+    max-width: 900px;
+    flex-wrap: nowrap;
+    overflow-x: visible;
+    width: 100%;
+}
+
+.location-stat {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-md);
+    padding: 1.5rem 1rem;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: var(--transition);
+    flex: 1;
+    min-width: 120px;
+    max-width: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.location-stat:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-gold);
+    box-shadow: var(--shadow-gold);
+}
+
+.location-stat i {
+    font-size: 2rem;
+    color: var(--primary-gold);
+    margin-bottom: 0.8rem;
+}
+
+.location-stat .stat-number {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--white);
+    display: block;
+    margin-bottom: 0.3rem;
+    line-height: 1;
+    font-family: var(--font-heading);
+}
+
+.location-stat .stat-label {
+    font-size: 0.9rem;
+    color: var(--gray);
+    display: block;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ===== FORM LAYOUT ===== */
 .rsvp-form-container {
-    max-width: 600px;
+    max-width: 800px;
     margin: 0 auto;
     background: rgba(255, 255, 255, 0.05);
     border-radius: var(--radius-lg);
-    padding: 3rem;
+    padding: 2.5rem;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    position: relative;
 }
 
 .rsvp-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Họ tên và Mối quan hệ trên 1 dòng */
+.form-group.double-column {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-end;
+    flex-wrap: nowrap;
+    width: 100%;
+}
+
+.form-group.double-column .form-subgroup {
+    flex: 1;
+    min-width: 0;
+}
+
+.form-group.double-column label {
     display: block;
+    margin-bottom: 0.5rem;
+    color: var(--white);
+    font-weight: 500;
+    font-size: 1rem;
+    text-align: left;
 }
 
-.confirmation-message {
+/* Form group thông thường */
+.form-group {
+    margin-bottom: 0;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.8rem;
+    color: var(--white);
+    font-weight: 500;
+    font-size: 1rem;
+    text-align: left;
+}
+
+/* Input và Select */
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 1rem 0.5rem 0.8rem;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-md);
+    color: var(--primary-gold);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    transition: var(--transition);
+    outline: none;
+}
+
+.form-group input,
+.form-group select {
+    height: 48px;
+}
+
+.form-group textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* Input focus state */
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: var(--primary-gold);
+    box-shadow: 0 0 0 2px rgba(197, 169, 125, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* ===== ATTENDANCE OPTIONS - 1 DÒNG ===== */
+.attendance-options {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    align-items: stretch;
+    flex-wrap: nowrap;
+}
+
+.option-label {
+    display: block;
+    cursor: pointer;
+    flex: 1;
+    min-width: 0;
+}
+
+.option-label input {
     display: none;
+}
+
+.option-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.2rem 0.8rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid transparent;
+    border-radius: var(--radius-md);
+    transition: var(--transition);
     text-align: center;
-    animation: fadeIn 0.5s ease;
+    min-height: 90px;
+    height: 100%;
+    width: 100%;
 }
 
-.success-icon {
-    font-size: 4rem;
-    color: #4CAF50;
-    margin-bottom: 2rem;
-    animation: bounceIn 1s ease;
+.option-label input:checked + .option-text {
+    border-color: var(--primary-gold);
+    background: rgba(197, 169, 125, 0.1);
+    transform: translateY(-2px);
 }
 
-.success-icon i {
-    animation: heartbeat 1.5s ease infinite;
+.option-text i {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    transition: var(--transition);
 }
+
+.option-label input:checked + .option-text i {
+    transform: scale(1.2);
+}
+
+.option-label[for*="Có"] .option-text i { color: #4CAF50; }
+.option-label[for*="Không"] .option-text i { color: #f44336; }
+.option-label[for*="Chưa"] .option-text i { color: #ff9800; }
+
+.option-text span:last-child {
+    font-size: 0.9rem;
+    line-height: 1.3;
+    color: var(--white);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ===== GUEST COUNTER ===== */
+.guest-count-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.guest-counter {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    max-width: 200px;
+    margin: 0 auto;
+}
+
+.counter-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-round);
+    background: var(--primary-gold);
+    color: var(--white);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 1rem;
+    outline: none;
+}
+
+.counter-btn:hover:not(:disabled) {
+    background: var(--secondary-gold);
+    transform: scale(1.1);
+}
+
+.counter-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#guestCount {
+    flex: 1;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--white);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-md);
+}
+
 /* ===== LOCATION OPTIONS ===== */
 .location-options {
     display: grid;
@@ -957,231 +1205,6 @@ h1, h2, h3, h4, .section-title {
     font-weight: bold;
 }
 
-/* Confirmation details */
-.confirmation-details {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: var(--radius-md);
-    padding: 1.5rem;
-    margin: 1.5rem 0;
-    border-left: 3px solid var(--primary-gold);
-    text-align: left;
-}
-
-.confirmation-details h4 {
-    color: var(--primary-gold);
-    margin-bottom: 1rem;
-    font-size: 1.2rem;
-}
-
-.confirmation-details ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.confirmation-details li {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    margin-bottom: 0.8rem;
-    color: var(--gray-light);
-}
-
-.confirmation-details li i {
-    color: var(--primary-gold);
-    font-size: 0.9rem;
-}
-
-/* Additional stats for locations */
-.location-stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-    margin-top: 2rem;
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.location-stat {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: var(--radius-md);
-    padding: 1.5rem;
-    text-align: center;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.location-stat i {
-    font-size: 2rem;
-    color: var(--primary-gold);
-    margin-bottom: 0.8rem;
-    display: block;
-}
-
-.location-stat .stat-number {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--white);
-    display: block;
-    margin-bottom: 0.3rem;
-}
-
-.location-stat .stat-label {
-    font-size: 0.9rem;
-    color: var(--gray);
-    display: block;
-}
-
-
-@keyframes bounceIn {
-    0% { transform: scale(0.3); opacity: 0; }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); opacity: 1; }
-}
-
-.confirmation-message h3 {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-    color: var(--primary-gold);
-}
-
-.confirmation-message p {
-    color: var(--gray-light);
-    margin-bottom: 2rem;
-    line-height: 1.6;
-}
-
-.form-group {
-    margin-bottom: 2rem;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 0.8rem;
-    color: var(--white);
-    font-weight: 500;
-    font-size: 1rem;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-    width: 100%;
-    padding: 1rem 1.5rem;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: var(--radius-md);
-    color: var(--darker-bg);
-    font-family: var(--font-body);
-    font-size: 1rem;
-    transition: var(--transition);
-    outline: none;
-}
-
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-    border-color: var(--primary-gold);
-    box-shadow: 0 0 0 2px rgba(197, 169, 125, 0.2);
-    background: rgba(255, 255, 255, 0.1);
-}
-
-.form-group input::placeholder,
-.form-group textarea::placeholder {
-    color: rgba(255, 255, 255, 0.4);
-}
-
-.attendance-options {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-}
-
-.option-label {
-    display: block;
-    cursor: pointer;
-}
-
-.option-label input {
-    display: none;
-}
-
-.option-text {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 1.5rem 1rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 2px solid transparent;
-    border-radius: var(--radius-md);
-    transition: var(--transition);
-    text-align: center;
-    min-height: 100px;
-}
-
-.option-label input:checked + .option-text {
-    border-color: var(--primary-gold);
-    background: rgba(197, 169, 125, 0.1);
-    transform: translateY(-2px);
-}
-
-.option-text i {
-    font-size: 2rem;
-    margin-bottom: 0.8rem;
-    transition: var(--transition);
-}
-
-.option-label input:checked + .option-text i {
-    transform: scale(1.2);
-}
-
-.option-label[for*="Có"] .option-text i { color: #4CAF50; }
-.option-label[for*="Không"] .option-text i { color: #f44336; }
-.option-label[for*="Chưa"] .option-text i { color: #ff9800; }
-
-.guest-counter {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    max-width: 200px;
-}
-
-.counter-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: var(--radius-round);
-    background: var(--primary-gold);
-    color: var(--white);
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: var(--transition);
-    font-size: 1rem;
-    outline: none;
-}
-
-.counter-btn:hover:not(:disabled) {
-    background: var(--secondary-gold);
-    transform: scale(1.1);
-}
-
-.counter-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-#guestCount {
-    flex: 1;
-    text-align: center;
-    font-size: 1.5rem;
-    font-weight: 600;
-    padding: 0.5rem;
-    background: rgba(255, 255, 255, 0.1);
-}
-
 .hint {
     display: block;
     margin-top: 0.5rem;
@@ -1189,9 +1212,10 @@ h1, h2, h3, h4, .section-title {
     font-size: 0.85rem;
 }
 
+/* ===== FORM FOOTER ===== */
 .form-footer {
     text-align: center;
-    margin-top: 3rem;
+    margin-top: 2rem;
 }
 
 .submit-btn {
@@ -1232,6 +1256,76 @@ h1, h2, h3, h4, .section-title {
     color: var(--gray);
     font-size: 0.9rem;
     line-height: 1.5;
+}
+
+/* ===== CONFIRMATION MESSAGE ===== */
+.confirmation-message {
+    display: none;
+    text-align: center;
+    animation: fadeIn 0.5s ease;
+}
+
+.success-icon {
+    font-size: 4rem;
+    color: #4CAF50;
+    margin-bottom: 2rem;
+    animation: bounceIn 1s ease;
+}
+
+.success-icon i {
+    animation: heartbeat 1.5s ease infinite;
+}
+
+@keyframes bounceIn {
+    0% { transform: scale(0.3); opacity: 0; }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.confirmation-message h3 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: var(--primary-gold);
+}
+
+.confirmation-message p {
+    color: var(--gray-light);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.confirmation-details {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    border-left: 3px solid var(--primary-gold);
+    text-align: left;
+}
+
+.confirmation-details h4 {
+    color: var(--primary-gold);
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.confirmation-details ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.confirmation-details li {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 0.8rem;
+    color: var(--gray-light);
+}
+
+.confirmation-details li i {
+    color: var(--primary-gold);
+    font-size: 0.9rem;
 }
 
 .btn-new-response {
@@ -1501,9 +1595,38 @@ h1, h2, h3, h4, .section-title {
     .gallery-item {
         height: 300px;
     }
+    .details-cards {
+        gap: 1.2rem;
+    }
     
-    .rsvp-stats {
-        grid-template-columns: repeat(3, 1fr);
+    .detail-card {
+        padding: 1.5rem 1rem;
+        min-width: 250px;
+        max-width: 300px;
+    }
+    
+    .card-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+    }
+    
+    .detail-card h3 {
+        font-size: 1.2rem;
+    }
+    
+    .detail-time {
+        font-size: 1rem;
+    }
+    
+    .detail-date, .detail-location {
+        font-size: 0.85rem;
+    }
+    
+    .detail-address {
+        font-size: 0.8rem;
+        -webkit-line-clamp: 3;
     }
 }
 
@@ -1537,19 +1660,18 @@ h1, h2, h3, h4, .section-title {
         min-height: 250px;
     }
     
-    /* FIX MOBILE: VẪN GIỮ 2 ẢNH CẠNH NHAU */
     .image-quad-container {
-        flex-direction: row; /* QUAN TRỌNG: Giữ row thay vì column */
+        flex-direction: row;
         gap: 1px;
     }
     
     .quad-image {
-        width: 50%; /* Vẫn giữ 50% cho mỗi ảnh */
+        width: 50%;
         height: 100%;
     }
     
     .quad-image img {
-        object-fit: contain; /* Hoặc cover tùy ý */
+        object-fit: contain;
     }
     
     .gallery-grid {
@@ -1561,11 +1683,6 @@ h1, h2, h3, h4, .section-title {
         height: 280px;
         max-width: 500px;
         margin: 0 auto;
-    }
-    
-    .gallery-img-container.left,
-    .gallery-img-container.right {
-        transition-delay: 0.1s !important;
     }
     
     .slideshow-controls {
@@ -1585,41 +1702,148 @@ h1, h2, h3, h4, .section-title {
         right: 1rem;
     }
     
-    .rsvp-stats {
-        grid-template-columns: 1fr;
-        max-width: 400px;
+    /* ===== RSVP STATS MOBILE ===== */
+    .rsvp-stats,
+    .location-stats {
+        gap: 0.8rem;
+        padding: 0 0.5rem;
+        justify-content: space-between;
     }
     
+    .stat-item,
+    .location-stat {
+        padding: 1rem 0.5rem;
+        min-width: calc(33.33% - 0.6rem);
+        max-width: calc(33.33% - 0.6rem);
+        height: 120px;
+    }
+    
+    .stat-item i,
+    .location-stat i {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-number,
+    .location-stat .stat-number {
+        font-size: 1.5rem;
+        margin-bottom: 0.2rem;
+    }
+    
+    .stat-label,
+    .location-stat .stat-label {
+        font-size: 0.75rem;
+        -webkit-line-clamp: 2;
+    }
+    
+    /* ===== FORM MOBILE ===== */
     .rsvp-form-container {
-        padding: 2rem;
-    }
-    
-    .attendance-options {
-        grid-template-columns: 1fr;
-    }
-    
-    .stat-item {
         padding: 1.5rem;
     }
     
-    .submit-btn {
-        min-width: 200px;
-        padding: 1rem 2rem;
-    }
-     .location-options {
-        grid-template-columns: 1fr;
+    .form-group.double-column {
+        flex-direction: column;
+        gap: 1rem;
     }
     
-    .location-stats {
-        grid-template-columns: 1fr;
-        max-width: 300px;
+    .form-group.double-column .form-subgroup {
+        width: 100%;
+    }
+    
+    .attendance-options {
+        flex-direction: row;
+        gap: 0.5rem;
+    }
+    
+    .option-text {
+        min-height: 80px;
+        padding: 0.8rem 0.5rem;
+        flex-direction: column;
+    }
+    
+    .option-text i {
+        font-size: 1.3rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .option-text span:last-child {
+        font-size: 0.8rem;
+        -webkit-line-clamp: 2;
+    }
+    
+    .location-options {
+        grid-template-columns: repeat(3, 1fr);
     }
     
     .location-text {
         min-height: 100px;
-        padding: 1.2rem;
+        padding: 1rem;
     }
-}
+    
+    .location-text i {
+        font-size: 1.5rem;
+    }
+    
+    .location-text span {
+        font-size: 0.8rem;
+    }
+    
+    .location-date {
+        font-size: 0.7rem;
+    }
+    
+    .details-cards {
+        gap: 0.8rem;
+        padding: 0 0.5rem;
+        justify-content: space-between; /* QUAN TRỌNG: dàn đều */
+        width: calc(100% - 1rem);
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .detail-card {
+        padding: 1.2rem 0.8rem;
+        min-width: 0; /* Cho phép co lại */
+        width: calc(33.33% - 0.6rem); /* 3 cột bằng nhau */
+        max-width: none; /* Bỏ max-width */
+        flex: 1;
+        height: auto;
+        min-height: 280px;
+    }
+    
+    .card-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 1.2rem;
+        margin-bottom: 0.8rem;
+    }
+    
+    .detail-card h3 {
+        font-size: 0.9rem;
+        margin-bottom: 0.8rem;
+        -webkit-line-clamp: 2; /* Cho phép 2 dòng nếu cần */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .detail-time {
+        font-size: 0.9rem;
+        margin: 0.3rem 0;
+    }
+    
+    .detail-date, .detail-location {
+        font-size: 0.8rem;
+        margin: 0.2rem 0;
+        line-height: 1.3;
+    }
+    
+    .detail-address {
+        font-size: 0.75rem;
+        margin-top: 0.5rem;
+        -webkit-line-clamp: 4; /* Tăng lên 4 dòng cho mobile */
+        line-height: 1.4;
+    }}
 
 @media (max-width: 480px) {
     .container {
@@ -1638,42 +1862,117 @@ h1, h2, h3, h4, .section-title {
         font-size: 1.2rem;
     }
     
-    .timeline-text h3 {
-        font-size: 1.5rem;
-    }
+    .timeline-text h3,
     .timeline-text h4 {
         font-size: 1.5rem;
     }
     
     .timeline-image {
-        height: 200px; /* Giảm chiều cao cho mobile nhỏ */
+        height: 200px;
         min-height: 200px;
     }
     
-    /* MOBILE NHỎ: VẪN GIỮ 2 ẢNH CẠNH NHAU */
     .image-quad-container {
-        flex-direction: row; /* KHÔNG đổi thành column */
-        gap: 1px;
+        gap: 0.5px;
     }
     
-    .quad-image {
-        width: 50%; /* Vẫn 50% */
-        height: 100%;
+    /* ===== RSVP STATS MOBILE NHỎ ===== */
+    .rsvp-stats,
+    .location-stats {
+        gap: 0.5rem;
+        padding: 0 0.3rem;
     }
     
-    .quad-image img {
-        object-fit: contain;
-        background: rgba(10, 13, 23, 0.7); /* Nền đậm hơn cho mobile */
+    .stat-item,
+    .location-stat {
+        padding: 0.8rem 0.3rem;
+        min-width: calc(33.33% - 0.4rem);
+        max-width: calc(33.33% - 0.4rem);
+        height: 110px;
     }
     
-    .detail-card {
-        padding: 1.5rem;
+    .stat-item i,
+    .location-stat i {
+        font-size: 1.3rem;
+        margin-bottom: 0.4rem;
     }
     
-    .card-icon {
-        width: 60px;
-        height: 60px;
-        font-size: 1.5rem;
+    .stat-number,
+    .location-stat .stat-number {
+        font-size: 1.3rem;
+    }
+    
+    .stat-label,
+    .location-stat .stat-label {
+        font-size: 0.7rem;
+    }
+    
+    /* ===== FORM MOBILE NHỎ ===== */
+    .rsvp-form-container {
+        padding: 1rem;
+    }
+    
+    .attendance-options {
+        flex-direction: row;
+        gap: 0.3rem;
+    }
+    
+    .option-text {
+        min-height: 70px;
+        padding: 0.6rem 0.3rem;
+    }
+    
+    .option-text i {
+        font-size: 1.1rem;
+        margin-bottom: 0.3rem;
+    }
+    
+    .option-text span:last-child {
+        font-size: 0.7rem;
+    }
+    
+    .location-options {
+        grid-template-columns: 1fr;
+    }
+    
+    .location-text {
+        min-height: 80px;
+        padding: 0.8rem;
+        flex-direction: row;
+        text-align: left;
+        gap: 1rem;
+    }
+    
+    .location-text i {
+        font-size: 1.3rem;
+        margin-bottom: 0;
+    }
+    
+    .location-text span {
+        flex: 1;
+        font-size: 0.85rem;
+    }
+    
+    .location-date {
+        display: none;
+    }
+    
+    .guest-counter {
+        max-width: 180px;
+    }
+    
+    .counter-btn {
+        width: 35px;
+        height: 35px;
+    }
+    
+    #guestCount {
+        font-size: 1.3rem;
+    }
+    
+    .submit-btn {
+        min-width: 200px;
+        padding: 1rem 2rem;
     }
     
     .signature {
@@ -1698,39 +1997,147 @@ h1, h2, h3, h4, .section-title {
     .gallery-overlay i {
         font-size: 1.5rem;
     }
-    
-    .rsvp-form-container {
-        padding: 1.5rem;
+    .details-cards {
+        gap: 0.5rem;
+        padding: 0 0.3rem;
+        width: calc(100% - 0.6rem);
     }
     
-    .guest-counter {
-        max-width: 150px;
+    .detail-card {
+        padding: 1rem 0.5rem;
+        width: calc(33.33% - 0.4rem);
+        min-height: 250px;
     }
     
-    .counter-btn {
-        width: 35px;
-        height: 35px;
+    .card-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+        margin-bottom: 0.6rem;
     }
     
-    #guestCount {
-        font-size: 1.3rem;
+    .detail-card h3 {
+        font-size: 0.8rem;
+        margin-bottom: 0.6rem;
+        -webkit-line-clamp: 2;
     }
     
+    .detail-time {
+        font-size: 0.85rem;
+        margin: 0.2rem 0;
+    }
+    
+    .detail-date, .detail-location {
+        font-size: 0.75rem;
+        margin: 0.15rem 0;
+    }
+    
+    .detail-address {
+        font-size: 0.7rem;
+        margin-top: 0.4rem;
+        -webkit-line-clamp: 4;
+        line-height: 1.3;
+    }
 }
 
-/* Nếu muốn trên mobile rất nhỏ vẫn cạnh nhau nhưng giảm gap */
+/* Xử lý màn hình rất nhỏ */
 @media (max-width: 360px) {
     .timeline-image {
         height: 180px;
         min-height: 180px;
     }
     
-    .image-quad-container {
-        gap: 0.5px; /* Giảm gap tối thiểu */
+    .quad-image img {
+        object-fit: cover;
     }
     
-    .quad-image img {
-        object-fit: cover; /* Trên màn hình rất nhỏ có thể dùng cover */
+    /* ===== RSVP STATS CHO MÀN HÌNH RẤT NHỎ ===== */
+    .rsvp-stats,
+    .location-stats {
+        gap: 0.3rem;
+        padding: 0 0.2rem;
+    }
+    
+    .stat-item,
+    .location-stat {
+        min-width: calc(33.33% - 0.2rem);
+        max-width: calc(33.33% - 0.2rem);
+        height: 100px;
+        padding: 0.6rem 0.2rem;
+    }
+    
+    .stat-item i,
+    .location-stat i {
+        font-size: 1.1rem;
+        margin-bottom: 0.3rem;
+    }
+    
+    .stat-number,
+    .location-stat .stat-number {
+        font-size: 1.1rem;
+        margin-bottom: 0.1rem;
+    }
+    
+    .stat-label,
+    .location-stat .stat-label {
+        font-size: 0.65rem;
+    }
+    
+    /* ===== FORM MÀN HÌNH RẤT NHỎ ===== */
+    .attendance-options {
+        flex-direction: row;
+        gap: 0.2rem;
+    }
+    
+    .option-text {
+        min-height: 65px;
+        padding: 0.5rem 0.2rem;
+    }
+    
+    .option-text i {
+        font-size: 1rem;
+        margin-bottom: 0.2rem;
+    }
+    
+    .option-text span:last-child {
+        font-size: 0.65rem;
+    }
+     .details-cards {
+        gap: 0.3rem;
+        padding: 0 0.2rem;
+        width: calc(100% - 0.4rem);
+    }
+    
+    .detail-card {
+        padding: 0.8rem 0.4rem;
+        width: calc(33.33% - 0.2rem);
+        min-height: 230px;
+    }
+    
+    .card-icon {
+        width: 35px;
+        height: 35px;
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .detail-card h3 {
+        font-size: 0.75rem;
+        margin-bottom: 0.5rem;
+        -webkit-line-clamp: 2;
+    }
+    
+    .detail-time {
+        font-size: 0.8rem;
+    }
+    
+    .detail-date, .detail-location {
+        font-size: 0.7rem;
+    }
+    
+    .detail-address {
+        font-size: 0.65rem;
+        -webkit-line-clamp: 4;
     }
 }
 

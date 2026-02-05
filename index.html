@@ -135,7 +135,7 @@ Nhưng duyên phận kỳ lạ, cả hai cùng đỗ vào một lớp chuyên. B
                                     <i class="fas fa-heart"></i>
                                 </div>
                                 <h3>Gặp mặt & Tỏ tình</h3>
-                                <p>Sau những ngày trò chuyện qua chat, chàng quyết định gặp lại nàng. Mọi thứ được chuẩn bị thật kỹ: nhà hàng, món quà nhỏ, cả những lời sẽ nói khi gặp. Điểm hẹn đầu tiên là The Deck Sài Gòn. Có lẽ vì xa nhau quá lâu, hai đứa chỉ ngại ngùng đứng cạnh, chưa dám chụp ảnh chung. Nhưng buổi tối hôm ấy thật tuyệt vời — dù sau đó chàng “cháy túi” vì nàng đã… giữ hết tiền.
+                                <p>Sau những ngày trò chuyện qua chat, chàng quyết định gặp lại nàng. Mọi thứ được chuẩn bị thật kỹ: nhà hàng, món quà nhỏ, cả những lời sẽ nói khi gặp. Điểm hẹn đầu tiên là The Deck Sài Gòn. Có lẽ vì xa nhau quá lâu, hai đứa chỉ ngại ngùng đứng cạnh, chưa dám chụp ảnh chung. Nhưng buổi tối hôm ấy thật tuyệt vời — dù sau đó chàng "cháy túi" vì nàng đã… giữ hết tiền.
 
 Ba tháng sau, ngày 13/12/2021, chàng lấy hết can đảm tỏ tình. Vì hồi hộp, lời nói có phần vụng về, nhưng trái tim thì chân thành. Và thật may, nàng đã gật đầu. Từ khoảnh khắc ấy, chúng tôi chính thức viết tiếp câu chuyện tình yêu kéo dài suốt 3 năm thanh xuân.</p>
                                 <span class="timeline-date">19/11/2022 và 13/12/2022</span>
@@ -362,7 +362,7 @@ Ngày hôm nay, em trở thành cô dâu của anh. Và mai sau, em sẽ là ng�
                         <p class="detail-time">10:30 - 15:30</p>
                         <p class="detail-date">Thứ hai, 30/03/2026</p>
                         <p class="detail-location">Nhà trai</p>
-                        <p class="detail-address">Thôn Tân Thượng - Thạch Hà - Hà Tĩnh</p>
+                        <p class="detail-address">Tân Thượng - Hồng Lộc - Hà Tĩnh</p>
                     </div>
 
                     <div class="detail-card highlight">
@@ -418,23 +418,26 @@ Ngày hôm nay, em trở thành cô dâu của anh. Và mai sau, em sẽ là ng�
 
         <div class="rsvp-form-container">
             <form id="rsvpForm" class="rsvp-form">
-                <div class="form-group">
-                    <label for="name">Họ và tên *</label>
-                    <input type="text" id="name" name="name" required placeholder="Nhập họ tên của bạn">
-                </div>
-                
-                <div class="form-group">
-                    <label for="relationship">Mối quan hệ với cô dâu/chú rể *</label>
-                    <select id="relationship" name="relationship" required>
-                        <option value="">Chọn mối quan hệ</option>
-                        <option value="Bạn bè">Bạn bè</option>
-                        <option value="Đồng nghiệp">Đồng nghiệp</option>
-                        <option value="Họ hàng">Họ hàng</option>
-                        <option value="Học cùng">Học cùng</option>
-                        <option value="Khác">Khác</option>
-                    </select>
+                <!-- Họ tên và Mối quan hệ trên 1 dòng -->
+                <div class="form-group double-column">
+                    <div class="form-subgroup">
+                        <label for="name">Họ và tên *</label>
+                        <input type="text" id="name" name="name" required placeholder="Nhập họ tên của bạn">
+                    </div>
+                    <div class="form-subgroup">
+                        <label for="relationship">Mối quan hệ *</label>
+                        <select id="relationship" name="relationship" required>
+                            <option value="">Chọn mối quan hệ</option>
+                            <option value="Bạn bè">Bạn bè</option>
+                            <option value="Đồng nghiệp">Đồng nghiệp</option>
+                            <option value="Họ hàng">Họ hàng</option>
+                            <option value="Học cùng">Học cùng</option>
+                            <option value="Khác">Khác</option>
+                        </select>
+                    </div>
                 </div>
 
+                <!-- Attendance options - 1 dòng -->
                 <div class="form-group">
                     <label for="attendance">Bạn có tham dự được không? *</label>
                     <div class="attendance-options">
@@ -554,7 +557,7 @@ Ngày hôm nay, em trở thành cô dâu của anh. Và mai sau, em sẽ là ng�
                 
                 <p class="footer-thanks">Chân thành cảm ơn sự hiện diện và những lời chúc của mọi người!</p>
                 
-                <p class="copyright">© 2026 sản phẩm của chồng làm ^-^.<br> Made with <i class="fas fa-heart"></i> forever.</p>
+                <p class="copyright">©2026 app của chồng làm hơi lag<br> Made with <i class="fas fa-heart"></i> forever.</p>
             </div>
         </footer>
     </main>
