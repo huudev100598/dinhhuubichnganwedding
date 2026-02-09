@@ -258,7 +258,7 @@ class OptimizedHeroSlideshow {
     }
 }
 
-// ===== RSVP MANAGER (ĐÃ CẬP NHẬT - SỬ DỤNG JSONP ĐỂ BYPASS CORS) =====
+// ===== RSVP MANAGER (SỬ DỤNG JSONP ĐỂ BYPASS CORS) =====
 class RSVPManager {
     constructor() {
         this.SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz3j7iYQ5ur_TMHNIMiGdhb0ejLSWKmV4yIMysSL8-5mxV2VLkxbGg9KmKC6lkL-83nlg/exec';
@@ -290,9 +290,8 @@ class RSVPManager {
         this.updateStatsDisplay();
         
         this.loadAllRSVPs();
-        this.loadStatsFromServer(); // Load lần đầu bằng JSONP
+        this.loadStatsFromServer(); // Load lần đầu
         
-        // Refresh stats mỗi 60 giây
         setInterval(() => this.loadStatsFromServer(), 60000);
     }
 
@@ -302,15 +301,10 @@ class RSVPManager {
         this.confirmationDetails = document.getElementById('confirmationDetails');
         this.newResponseBtn = document.getElementById('newResponseBtn');
         
-        if (!this.form) {
-            console.error('❌ RSVP form not found');
-            return;
-        }
+        if (!this.form) return console.error('❌ RSVP form not found');
         
         this.form.addEventListener('submit', (e) => this.handleSubmit(e));
-        if (this.newResponseBtn) {
-            this.newResponseBtn.addEventListener('click', () => this.showForm());
-        }
+        if (this.newResponseBtn) this.newResponseBtn.addEventListener('click', () => this.showForm());
         
         this.form.querySelectorAll('input[name="attendance"]').forEach(radio => {
             radio.addEventListener('change', () => this.toggleLocationOptions());
@@ -352,7 +346,7 @@ class RSVPManager {
                 if (attendance?.value === 'Có') {
                     const checked = document.querySelectorAll('input[name="location"]:checked');
                     if (checked.length === 0) {
-                        this.showError('Vui lòng chọn ít nhất một địa điểm tham dự');
+                        this.showError('Vui lòng chọn ít nhất một địa điểm');
                         checkbox.checked = true;
                     }
                 }
@@ -363,72 +357,59 @@ class RSVPManager {
     toggleLocationOptions() {
         const attendance = document.querySelector('input[name="attendance"]:checked');
         const locationGroup = document.getElementById('locationGroup');
-        const locationCheckboxes = document.querySelectorAll('input[name="location"]');
+        const checkboxes = document.querySelectorAll('input[name="location"]');
         
         if (attendance?.value === 'Có') {
             locationGroup.style.display = 'block';
-            locationCheckboxes.forEach(cb => cb.disabled = false);
-            if (!document.querySelector('input[name="location"]:checked')) {
-                locationCheckboxes[0].checked = true;
-            }
+            checkboxes.forEach(cb => cb.disabled = false);
+            if (!document.querySelector('input[name="location"]:checked')) checkboxes[0].checked = true;
         } else {
             locationGroup.style.display = 'none';
-            locationCheckboxes.forEach(cb => {
-                cb.disabled = true;
-                cb.checked = false;
-            });
+            checkboxes.forEach(cb => { cb.disabled = true; cb.checked = false; });
         }
     }
 
     updateCounterButtons(value) {
-        const minusBtn = document.querySelector('.counter-btn.minus');
-        const plusBtn = document.querySelector('.counter-btn.plus');
-        if (minusBtn) minusBtn.disabled = value <= 1;
-        if (plusBtn) plusBtn.disabled = value >= 10;
+        document.querySelector('.counter-btn.minus').disabled = value <= 1;
+        document.querySelector('.counter-btn.plus').disabled = value >= 10;
     }
 
-    // ===== LOAD STATS QUA JSONP (BYPASS CORS) =====
+    // LOAD STATS QUA JSONP (BYPASS CORS)
     loadStatsFromServer() {
-        try {
-            const callbackName = 'jsonpStats_' + Date.now();
-            const script = document.createElement('script');
-            
-            window[callbackName] = (data) => {
-                if (data && !data.error) {
-                    this.stats = {
-                        totalGuests: data.totalGuests || 0,
-                        attendingGuests: data.attendingGuests || 0,
-                        confirmedGroups: data.confirmedGroups || 0,
-                        locations: data.locations || { groom: 0, bride: 0, party: 0 }
-                    };
-                    localStorage.setItem('weddingRSVPStats', JSON.stringify(this.stats));
-                    this.updateStatsDisplay();
-                    console.log('📊 Loaded realtime stats via JSONP:', this.stats);
-                } else {
-                    console.warn('JSONP trả về lỗi:', data?.error);
-                    this.loadStats();
-                }
-                
-                // Cleanup
-                document.body.removeChild(script);
-                delete window[callbackName];
-            };
-            
-            const url = `${this.SCRIPT_URL}?callback=${callbackName}&t=${Date.now()}`;
-            script.src = url;
-            script.onerror = () => {
-                console.warn('JSONP failed');
+        const callbackName = 'jsonpStats_' + Math.random().toString(36).substring(2);
+        
+        window[callbackName] = (data) => {
+            if (data && !data.error) {
+                this.stats = {
+                    totalGuests: data.totalGuests || 0,
+                    attendingGuests: data.attendingGuests || 0,
+                    confirmedGroups: data.confirmedGroups || 0,
+                    locations: data.locations || { groom: 0, bride: 0, party: 0 }
+                };
+                localStorage.setItem('weddingRSVPStats', JSON.stringify(this.stats));
+                this.updateStatsDisplay();
+                console.log('📊 Loaded stats via JSONP:', this.stats);
+            } else {
+                console.warn('JSONP error:', data?.error);
                 this.loadStats();
-                document.body.removeChild(script);
-                delete window[callbackName];
-            };
-            
-            document.body.appendChild(script);
-            
-        } catch (err) {
-            console.warn('⚠️ Không load stats từ server (fallback local):', err);
+            }
+            cleanup();
+        };
+
+        const script = document.createElement('script');
+        script.src = `${this.SCRIPT_URL}?callback=${callbackName}&t=${Date.now()}`;
+        script.onerror = () => {
+            console.warn('JSONP failed');
             this.loadStats();
-        }
+            cleanup();
+        };
+
+        const cleanup = () => {
+            if (script.parentNode) document.body.removeChild(script);
+            delete window[callbackName];
+        };
+
+        document.body.appendChild(script);
     }
 
     async handleSubmit(e) {
@@ -464,8 +445,7 @@ class RSVPManager {
             
             await this.sendToGoogleSheets(data);
             
-            // Sau submit thành công → load lại stats bằng JSONP
-            this.loadStatsFromServer();
+            this.loadStatsFromServer(); // Reload stats sau submit
             
             this.showConfirmation(data);
             this.form.reset();
@@ -474,7 +454,7 @@ class RSVPManager {
             
         } catch (error) {
             console.error('❌ Submit error:', error);
-            this.showError(error.message || 'Có lỗi xảy ra khi gửi xác nhận');
+            this.showError(error.message || 'Có lỗi xảy ra');
         } finally {
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalText;
@@ -482,34 +462,30 @@ class RSVPManager {
     }
 
     validateData(data) {
-        if (!data.name || data.name.trim().length < 2) throw new Error('Vui lòng nhập họ tên hợp lệ (ít nhất 2 ký tự)');
-        if (!data.relationship) throw new Error('Vui lòng chọn mối quan hệ');
-        if (!data.attendance) throw new Error('Vui lòng chọn tình trạng tham dự');
-        if (!data.guestCount || data.guestCount < 1 || data.guestCount > 10) throw new Error('Số lượng khách phải từ 1 đến 10 người');
-        if (data.attendance === 'Có' && (!data.locations || data.locations.length === 0)) throw new Error('Vui lòng chọn ít nhất một địa điểm tham dự');
+        if (!data.name || data.name.trim().length < 2) throw new Error('Họ tên không hợp lệ');
+        if (!data.relationship) throw new Error('Chọn mối quan hệ');
+        if (!data.attendance) throw new Error('Chọn tình trạng tham dự');
+        if (!data.guestCount || data.guestCount < 1 || data.guestCount > 10) throw new Error('Số người từ 1-10');
+        if (data.attendance === 'Có' && (!data.locations || data.locations.length === 0)) throw new Error('Chọn ít nhất 1 địa điểm');
     }
 
     async sendToGoogleSheets(data) {
-        const maxRetries = 2;
         let attempt = 0;
+        const maxRetries = 2;
 
         while (attempt <= maxRetries) {
             try {
-                console.log(`[SEND] Thử gửi POST lần ${attempt + 1}`);
-                
-                const response = await fetch(this.SCRIPT_URL, {
+                await fetch(this.SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
-                
-                console.log('✅ POST request đã được gửi (no-cors mode)');
-                return { result: 'success' };
-                
-            } catch (error) {
+                console.log('✅ POST sent (no-cors)');
+                return { success: true };
+            } catch (err) {
                 attempt++;
-                if (attempt > maxRetries) throw new Error('Không kết nối được server sau nhiều lần thử');
+                if (attempt > maxRetries) throw err;
                 await new Promise(r => setTimeout(r, 2000));
             }
         }
@@ -517,52 +493,41 @@ class RSVPManager {
 
     saveToLocalStorage(data) {
         try {
-            const savedData = JSON.parse(localStorage.getItem('weddingRSVPs') || '[]');
-            savedData.push({
-                ...data,
-                id: Date.now() + Math.random(),
-                submittedAt: new Date().toISOString()
-            });
-            localStorage.setItem('weddingRSVPs', JSON.stringify(savedData));
-            console.log('📁 Đã lưu vào localStorage:', savedData.length, 'bản ghi');
+            let saved = JSON.parse(localStorage.getItem('weddingRSVPs') || '[]');
+            saved.push({ ...data, id: Date.now() + Math.random(), submittedAt: new Date().toISOString() });
+            localStorage.setItem('weddingRSVPs', JSON.stringify(saved));
             localStorage.setItem('weddingRSVPStats', JSON.stringify(this.stats));
+            console.log('📁 Saved to localStorage:', saved.length);
         } catch (err) {
-            console.error('❌ Lỗi lưu localStorage:', err);
-            window.tempWeddingData = window.tempWeddingData || { rsvps: [], stats: this.stats };
-            window.tempWeddingData.rsvps.push(data);
-            window.tempWeddingData.stats = this.stats;
+            console.error('Lỗi localStorage:', err);
         }
     }
 
     loadAllRSVPs() {
         try {
-            const savedData = JSON.parse(localStorage.getItem('weddingRSVPs') || '[]');
-            if (savedData.length > 0) {
-                console.log('📋 Tìm thấy', savedData.length, 'RSVP trong localStorage');
-                this.calculateStatsFromRSVPs(savedData);
+            const saved = JSON.parse(localStorage.getItem('weddingRSVPs') || '[]');
+            if (saved.length > 0) {
+                this.calculateStatsFromRSVPs(saved);
                 this.updateStatsDisplay();
             }
         } catch (err) {
-            console.warn('Không load RSVPs từ localStorage:', err);
+            console.warn('Không load RSVPs:', err);
         }
     }
 
     calculateStatsFromRSVPs(rsvps) {
         this.stats = { totalGuests: 0, attendingGuests: 0, confirmedGroups: 0, locations: { groom: 0, bride: 0, party: 0 } };
         
-        rsvps.forEach(rsvp => {
-            if (rsvp.attendance === 'Có') {
-                this.stats.totalGuests += rsvp.guestCount || 0;
-                this.stats.attendingGuests += rsvp.guestCount || 0;
+        rsvps.forEach(r => {
+            if (r.attendance === 'Có') {
+                this.stats.totalGuests += r.guestCount || 0;
+                this.stats.attendingGuests += r.guestCount || 0;
                 this.stats.confirmedGroups += 1;
-                
-                if (rsvp.locations && Array.isArray(rsvp.locations)) {
-                    rsvp.locations.forEach(loc => {
-                        if (loc === 'Nhà trai') this.stats.locations.groom += rsvp.guestCount || 0;
-                        if (loc === 'Nhà gái') this.stats.locations.bride += rsvp.guestCount || 0;
-                        if (loc === 'Báo hỷ') this.stats.locations.party += rsvp.guestCount || 0;
-                    });
-                }
+                (r.locations || []).forEach(loc => {
+                    if (loc === 'Nhà trai') this.stats.locations.groom += r.guestCount || 0;
+                    if (loc === 'Nhà gái') this.stats.locations.bride += r.guestCount || 0;
+                    if (loc === 'Báo hỷ') this.stats.locations.party += r.guestCount || 0;
+                });
             }
         });
         
@@ -574,13 +539,11 @@ class RSVPManager {
             this.stats.totalGuests += data.guestCount;
             this.stats.attendingGuests += data.guestCount;
             this.stats.confirmedGroups += 1;
-            
             data.locations.forEach(loc => {
                 if (loc === 'Nhà trai') this.stats.locations.groom += data.guestCount;
                 if (loc === 'Nhà gái') this.stats.locations.bride += data.guestCount;
                 if (loc === 'Báo hỷ') this.stats.locations.party += data.guestCount;
             });
-            
             localStorage.setItem('weddingRSVPStats', JSON.stringify(this.stats));
         }
     }
@@ -593,72 +556,61 @@ class RSVPManager {
                 if (JSON.stringify(parsed) !== JSON.stringify(this.stats)) {
                     this.stats = parsed;
                     this.updateStatsDisplay();
-                    console.log('📊 Updated stats from localStorage:', this.stats);
                 }
             }
-        } catch (err) {
-            console.warn('Không load stats từ localStorage:', err);
-        }
+        } catch (err) {}
     }
 
     updateStatsDisplay() {
-        const els = {
-            totalGuests: document.getElementById('totalGuests'),
-            attendingGuests: document.getElementById('attendingGuests'),
-            confirmedGroups: document.getElementById('confirmedGroups'),
-            groom: document.getElementById('groomLocationCount'),
-            bride: document.getElementById('brideLocationCount'),
-            party: document.getElementById('partyLocationCount')
+        const map = {
+            totalGuests: 'totalGuests',
+            attendingGuests: 'attendingGuests',
+            confirmedGroups: 'confirmedGroups',
+            groomLocationCount: this.stats.locations.groom,
+            brideLocationCount: this.stats.locations.bride,
+            partyLocationCount: this.stats.locations.party
         };
-        
-        Object.entries(els).forEach(([key, el]) => {
-            if (el) {
-                const value = key.includes('Location') 
-                    ? this.stats.locations[key.replace('LocationCount', '')] 
-                    : this.stats[key];
-                this.animateCounter(el, value);
-            }
+
+        Object.keys(map).forEach(id => {
+            const el = document.getElementById(id);
+            if (el) this.animateCounter(el, typeof map[id] === 'number' ? map[id] : this.stats[id]);
         });
     }
 
-    animateCounter(element, target) {
-        if (!element) return;
-        const current = parseInt(element.textContent) || 0;
+    animateCounter(el, target) {
+        let current = parseInt(el.textContent) || 0;
         if (current === target) return;
         
         const diff = Math.abs(target - current);
-        const increment = target > current ? 1 : -1;
-        const stepTime = Math.max(30, Math.floor(800 / diff));
+        const inc = target > current ? 1 : -1;
+        const step = Math.max(30, Math.floor(800 / diff));
         
-        let value = current;
+        let val = current;
         const timer = setInterval(() => {
-            value += increment;
-            element.textContent = value;
-            if (value === target) clearInterval(timer);
-        }, stepTime);
+            val += inc;
+            el.textContent = val;
+            if (val === target) clearInterval(timer);
+        }, step);
     }
 
     showConfirmation(data) {
-        if (!this.form || !this.confirmationMessage) return;
-        
         this.form.style.display = 'none';
         this.confirmationMessage.style.display = 'block';
         
         if (this.confirmationDetails) {
             let html = '<h4>Thông tin xác nhận:</h4><ul>';
-            html += `<li><i class="fas fa-user"></i> <strong>Họ tên:</strong> ${data.name}</li>`;
-            html += `<li><i class="fas fa-users"></i> <strong>Số người:</strong> ${data.guestCount} người</li>`;
-            html += `<li><i class="fas fa-handshake"></i> <strong>Mối quan hệ:</strong> ${data.relationship}</li>`;
-            html += `<li><i class="fas fa-calendar-check"></i> <strong>Tham dự:</strong> ${data.attendance}</li>`;
+            html += `<li><strong>Họ tên:</strong> ${data.name}</li>`;
+            html += `<li><strong>Số người:</strong> ${data.guestCount}</li>`;
+            html += `<li><strong>Mối quan hệ:</strong> ${data.relationship}</li>`;
+            html += `<li><strong>Tham dự:</strong> ${data.attendance}</li>`;
             
-            if (data.attendance === 'Có' && data.locations.length > 0) {
-                html += `<li><i class="fas fa-map-marker-alt"></i> <strong>Địa điểm:</strong> ${data.locations.join(', ')}</li>`;
-                if (data.locations.includes('Nhà trai')) html += `<li><i class="fas fa-calendar-day"></i> Nhà trai (Hà Tĩnh): 30/03/2026</li>`;
-                if (data.locations.includes('Nhà gái')) html += `<li><i class="fas fa-calendar-day"></i> Nhà gái (Lâm Đồng): 22/03/2026</li>`;
-                if (data.locations.includes('Báo hỷ')) html += `<li><i class="fas fa-calendar-day"></i> Tiệc báo hỷ (TP.HCM): 19/04/2026</li>`;
+            if (data.attendance === 'Có' && data.locations.length) {
+                html += `<li><strong>Địa điểm:</strong> ${data.locations.join(', ')}</li>`;
+                if (data.locations.includes('Nhà trai')) html += '<li>Nhà trai (Hà Tĩnh): 30/03/2026</li>';
+                if (data.locations.includes('Nhà gái')) html += '<li>Nhà gái (Lâm Đồng): 22/03/2026</li>';
+                if (data.locations.includes('Báo hỷ')) html += '<li>Báo hỷ (TP.HCM): 19/04/2026</li>';
             }
-            
-            if (data.message) html += `<li><i class="fas fa-comment"></i> <strong>Lời nhắn:</strong> "${data.message}"</li>`;
+            if (data.message) html += `<li><strong>Lời nhắn:</strong> "${data.message}"</li>`;
             html += '</ul>';
             this.confirmationDetails.innerHTML = html;
         }
@@ -667,18 +619,16 @@ class RSVPManager {
     }
 
     showForm() {
-        if (!this.form || !this.confirmationMessage) return;
         this.confirmationMessage.style.display = 'none';
         this.form.style.display = 'block';
         this.form.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    showError(message) {
+    showError(msg) {
         const toast = document.createElement('div');
         toast.className = 'error-toast show';
-        toast.innerHTML = `<i class="fas fa-exclamation-circle"></i><span>${message}</span>`;
+        toast.innerHTML = `<i class="fas fa-exclamation-circle"></i><span>${msg}</span>`;
         document.body.appendChild(toast);
-        
         setTimeout(() => {
             toast.classList.remove('show');
             setTimeout(() => toast.remove(), 300);
@@ -693,33 +643,24 @@ class OptimizedWeddingInvitation {
         this.musicBtn = document.getElementById('musicToggle');
         this.loadingScreen = document.getElementById('loadingScreen');
         this.isMobile = window.innerWidth <= 768;
-        this.isLowEnd = this.detectLowEndDevice();
+        this.isLowEnd = /android|iphone|ipod/i.test(navigator.userAgent) && (navigator.deviceMemory || 4) < 4;
         
         this.init();
     }
 
-    detectLowEndDevice() {
-        const isAndroid = /android/i.test(navigator.userAgent);
-        const isIOS = /iphone|ipod/i.test(navigator.userAgent);
-        const memory = navigator.deviceMemory || 4;
-        return (isAndroid || isIOS) && memory < 4;
-    }
-
     init() {
-        console.log('🚀 Optimized Wedding Invitation initializing...');
+        console.log('🚀 Initializing...');
         this.preloadCriticalImages();
         
-        this.starsBackground = new OptimizedStarsBackground();
+        this.stars = new OptimizedStarsBackground();
         this.petals = new OptimizedPetals();
         this.slideshow = new OptimizedHeroSlideshow();
-        this.rsvpManager = new RSVPManager();
+        this.rsvp = new RSVPManager();
         
-        this.setupOptimizedEventListeners();
+        this.setupListeners();
         this.setupScrollAnimations();
-        this.setupGalleryAnimations();
-        this.hideLoadingScreen();
-        
-        console.log('✅ Optimized initialization complete!');
+        this.setupGallery();
+        this.hideLoading();
     }
 
     preloadCriticalImages() {
@@ -730,10 +671,10 @@ class OptimizedWeddingInvitation {
         });
     }
 
-    setupOptimizedEventListeners() {
+    setupListeners() {
         if (this.music && this.musicBtn) {
             this.music.volume = 0.4;
-            this.musicBtn.addEventListener('click', (e) => {
+            this.musicBtn.addEventListener('click', e => {
                 e.stopPropagation();
                 if (this.music.paused) {
                     this.music.play().then(() => this.musicBtn.classList.add('playing'));
@@ -742,17 +683,17 @@ class OptimizedWeddingInvitation {
                     this.musicBtn.classList.remove('playing');
                 }
             });
-            
-            const playMusic = () => {
+
+            const playOnInteract = () => {
                 if (this.music.paused) this.music.play().then(() => this.musicBtn.classList.add('playing'));
-                document.removeEventListener('click', playMusic);
-                document.removeEventListener('touchstart', playMusic);
+                document.removeEventListener('click', playOnInteract);
+                document.removeEventListener('touchstart', playOnInteract);
             };
-            document.addEventListener('click', playMusic, { once: true });
-            document.addEventListener('touchstart', playMusic, { once: true });
+            document.addEventListener('click', playOnInteract, { once: true });
+            document.addEventListener('touchstart', playOnInteract, { once: true });
         }
 
-        document.querySelector('.btn-scroll')?.addEventListener('click', (e) => {
+        document.querySelector('.btn-scroll')?.addEventListener('click', e => {
             e.preventDefault();
             document.querySelector('#story')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
@@ -762,59 +703,56 @@ class OptimizedWeddingInvitation {
             document.body.style.overflow = 'auto';
         });
 
-        document.addEventListener('keydown', (e) => {
+        document.addEventListener('keydown', e => {
             if (e.key === 'Escape') {
                 document.getElementById('imageModal').style.display = 'none';
                 document.body.style.overflow = 'auto';
             }
         });
-        
-        let scrollTimeout;
+
+        let scrollTimer;
         window.addEventListener('scroll', () => {
-            clearTimeout(scrollTimeout);
-            scrollTimeout = setTimeout(() => this.checkVisibleElements(), 100);
+            clearTimeout(scrollTimer);
+            scrollTimer = setTimeout(() => this.checkVisible(), 100);
         });
     }
 
-    setupGalleryAnimations() {
-        document.querySelectorAll('.gallery-img-container').forEach(container => {
-            container.addEventListener('click', () => {
-                const img = container.querySelector('img');
+    setupGallery() {
+        document.querySelectorAll('.gallery-img-container').forEach(cont => {
+            cont.addEventListener('click', () => {
+                const img = cont.querySelector('img');
                 if (img) {
-                    const modal = document.getElementById('imageModal');
-                    const modalImg = document.getElementById('modalImage');
-                    modalImg.src = img.src;
-                    modal.style.display = 'flex';
+                    document.getElementById('modalImage').src = img.src;
+                    document.getElementById('imageModal').style.display = 'flex';
                     document.body.style.overflow = 'hidden';
                 }
             });
         });
     }
 
-    checkVisibleElements() {
-        const viewportHeight = window.innerHeight;
+    checkVisible() {
+        const vh = window.innerHeight;
         document.querySelectorAll('.timeline-item, .gallery-item').forEach(el => {
-            const rect = el.getBoundingClientRect();
-            if (rect.top < viewportHeight * 0.8) el.classList.add('visible');
+            if (el.getBoundingClientRect().top < vh * 0.8) el.classList.add('visible');
         });
     }
 
     setupScrollAnimations() {
-        const observer = new IntersectionObserver(entries => {
+        const obs = new IntersectionObserver(entries => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('visible');
-                    if (entry.target.classList.contains('gallery-item')) observer.unobserve(entry.target);
+                    if (entry.target.classList.contains('gallery-item')) obs.unobserve(entry.target);
                 }
             });
         }, { threshold: 0.1, rootMargin: '50px 0px' });
-        
-        document.querySelectorAll('.timeline-item, .gallery-item').forEach((el, index) => {
-            if (index < 8) observer.observe(el);
+
+        document.querySelectorAll('.timeline-item, .gallery-item').forEach((el, i) => {
+            if (i < 8) obs.observe(el);
         });
     }
 
-    hideLoadingScreen() {
+    hideLoading() {
         if (this.loadingScreen) {
             setTimeout(() => {
                 this.loadingScreen.classList.add('hidden');
@@ -830,7 +768,7 @@ class OptimizedWeddingInvitation {
 // ===== LAZY LOADING =====
 function setupLazyLoading() {
     if ('IntersectionObserver' in window) {
-        const observer = new IntersectionObserver((entries) => {
+        const obs = new IntersectionObserver(entries => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const img = entry.target;
@@ -838,82 +776,27 @@ function setupLazyLoading() {
                         img.src = img.dataset.src;
                         img.removeAttribute('data-src');
                     }
-                    observer.unobserve(img);
+                    obs.unobserve(img);
                 }
             });
         }, { rootMargin: '100px 0px', threshold: 0.01 });
-        
+
         document.querySelectorAll('img[loading="lazy"]').forEach(img => {
-            if (img.dataset.src) observer.observe(img);
+            if (img.dataset.src) obs.observe(img);
         });
     }
 }
 
-// ===== LOCALSTORAGE FALLBACK =====
-function checkLocalStorage() {
-    try {
-        const testKey = '__test__';
-        localStorage.setItem(testKey, 'test');
-        localStorage.removeItem(testKey);
-        return true;
-    } catch (e) {
-        console.warn('⚠️ localStorage không khả dụng, dùng fallback');
-        window.tempWeddingData = window.tempWeddingData || {
-            stats: { totalGuests: 0, attendingGuests: 0, confirmedGroups: 0, locations: { groom: 0, bride: 0, party: 0 } },
-            rsvps: []
-        };
-        return false;
-    }
-}
-
-// ===== INITIALIZATION =====
+// ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
-    checkLocalStorage();
-    
-    setTimeout(() => {
-        try {
-            window.weddingApp = new OptimizedWeddingInvitation();
-            setupLazyLoading();
-            console.log('🎉 Ứng dụng đã khởi động tối ưu!');
-            
-            if (window.tempWeddingData?.stats) {
-                const rsvp = window.weddingApp.rsvpManager;
-                rsvp.stats = window.tempWeddingData.stats;
-                rsvp.updateStatsDisplay();
-            }
-        } catch (err) {
-            console.error('❌ Application failed:', err);
-            document.body.classList.remove('loading');
-            const ls = document.getElementById('loadingScreen');
-            if (ls) ls.style.display = 'none';
-        }
-    }, 100);
-});
-
-// ===== ADDITIONAL OPTIMIZATIONS =====
-let resizeThrottle;
-window.addEventListener('resize', () => {
-    clearTimeout(resizeThrottle);
-    resizeThrottle = setTimeout(() => {
-        if (window.weddingApp?.starsBackground) window.weddingApp.starsBackground.resize();
-    }, 200);
-});
-
-document.addEventListener('visibilitychange', () => {
-    const hidden = document.hidden;
-    if (hidden) {
-        if (window.weddingApp?.starsBackground) window.weddingApp.starsBackground.stopAnimation();
-        const music = document.getElementById('weddingMusic');
-        if (music && !music.paused) music.pause();
-    } else {
-        if (window.weddingApp?.starsBackground) window.weddingApp.starsBackground.startAnimation();
-    }
-});
-
-window.addEventListener('load', () => {
-    document.body.classList.remove('loading');
-    if ('performance' in window) {
-        const perf = window.performance.timing;
-        console.log(`📊 Page loaded in ${perf.loadEventEnd - perf.navigationStart}ms`);
+    try {
+        window.weddingApp = new OptimizedWeddingInvitation();
+        setupLazyLoading();
+        console.log('🎉 App ready!');
+    } catch (err) {
+        console.error('❌ Init failed:', err);
+        document.body.classList.remove('loading');
+        const ls = document.getElementById('loadingScreen');
+        if (ls) ls.style.display = 'none';
     }
 });
