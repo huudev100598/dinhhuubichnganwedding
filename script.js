@@ -562,13 +562,30 @@ class OptimizedWeddingInvitation {
     setupScrollAnimations() {
         const observer = new IntersectionObserver(entries => {
             entries.forEach(entry => {
-                if (entry.isIntersecting) entry.target.classList.add('visible');
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
             });
-        }, { threshold: 0.1, rootMargin: '50px 0px' });
-        
-        document.querySelectorAll('.timeline-item, .gallery-item').forEach((el, index) => {
-            if (index < 8) observer.observe(el);
+        }, { 
+            threshold: 0.1, 
+            rootMargin: '100px 0px' // Tăng margin để trigger sớm hơn
         });
+        
+        // Observe tất cả items
+        document.querySelectorAll('.timeline-item, .gallery-item').forEach(el => {
+            observer.observe(el);
+        });
+        
+        // Tự động thêm class 'visible' cho 3 items cuối sau 2 giây
+        setTimeout(() => {
+            const galleryItems = document.querySelectorAll('.gallery-item');
+            const lastThree = Array.from(galleryItems).slice(-3);
+            lastThree.forEach(item => {
+                if (!item.classList.contains('visible')) {
+                    item.classList.add('visible');
+                }
+            });
+        }, 2000);
     }
 
     hideLoadingScreen() {

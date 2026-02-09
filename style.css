@@ -1893,3 +1893,30 @@ h1, h2, h3, h4, .section-title {
         height: -webkit-fill-available;
     }
 }
+
+/* ===== FIX 3 GALLERY ITEMS CUỐI ===== */
+.gallery-item:nth-last-child(-n+3) {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
+}
+
+/* Force animation cho containers */
+.gallery-item:nth-last-child(-n+3) .gallery-img-container.left {
+    opacity: 1 !important;
+    transform: translateX(0) !important;
+}
+
+.gallery-item:nth-last-child(-n+3) .gallery-img-container.right {
+    opacity: 1 !important;
+    transform: translateX(0) !important;
+}
+
+/* Đảm bảo overlay hiển thị */
+.gallery-item:nth-last-child(-n+3) .gallery-overlay {
+    opacity: 1 !important;
+}
+
+.gallery-item:nth-last-child(-n+3) .gallery-overlay i {
+    transform: scale(1) !important;
+}
