@@ -298,14 +298,12 @@ class OptimizedHeroSlideshow {
     }
 }
 
-// ===== RSVP MANAGER (ĐÃ CẬP NHẬT) =====
+// ===== RSVP MANAGER (ĐÃ CẬP NHẬT - CÓ SERVER SYNC) =====
 class RSVPManager {
     constructor() {
-        this.SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz3j7iYQ5ur_TMHNIMiGdhb0ejLSWKmV4yIMysSL8-5mxV2VLkxbGg9KmKC6lkL-83nlg/exec';
+        this.SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz3j7iYQ5ur_TMHNIMiGdhb0ejLSWKmV4yIMysSL8-5mxV2VLkxbGg9KmKC6lkL-83nlg/exec';  // Giữ URL cũ hoặc cập nhật nếu deploy mới
         
-        // Khởi tạo stats từ localStorage hoặc mặc định
         this.stats = this.loadInitialStats();
-        
         this.init();
     }
 
@@ -337,13 +335,13 @@ class RSVPManager {
         this.setupForm();
         this.setupCounter();
         this.setupLocationOptions();
-        this.updateStatsDisplay(); // Cập nhật hiển thị ngay từ đầu
-        
-        // Kiểm tra nếu có dữ liệu cũ trong localStorage
-        this.loadAllRSVPs();
-        
-        // Cập nhật mỗi 5 phút (tùy chọn)
-        setInterval(() => this.loadStats(), 300000);
+        this.updateStatsDisplay();
+
+        this.loadAllRSVPs();               // Giữ fallback local
+        this.loadStatsFromServer();        // Ưu tiên load từ server
+
+        // Refresh stats từ server mỗi 60 giây
+        setInterval(() => this.loadStatsFromServer(), 60000);
     }
 
     setupForm() {
@@ -443,6 +441,32 @@ class RSVPManager {
         if (plusBtn) plusBtn.disabled = value >= 10;
     }
 
+    async loadStatsFromServer() {
+        try {
+            const response = await fetch(this.SCRIPT_URL, { method: 'GET' });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+            const serverStats = await response.json();
+            if (serverStats.error) throw new Error(serverStats.error);
+
+            // Cập nhật stats từ server
+            this.stats = {
+                totalGuests: serverStats.totalGuests || 0,
+                attendingGuests: serverStats.attendingGuests || 0,
+                confirmedGroups: serverStats.confirmedGroups || 0,
+                locations: serverStats.locations || { groom: 0, bride: 0, party: 0 }
+            };
+
+            // Lưu vào localStorage để fallback
+            localStorage.setItem('weddingRSVPStats', JSON.stringify(this.stats));
+            this.updateStatsDisplay();
+            console.log('📊 Loaded realtime stats from server:', this.stats);
+        } catch (err) {
+            console.warn('⚠️ Không load stats từ server (fallback local):', err);
+            this.loadStats();  // Fallback dùng local
+        }
+    }
+
     async handleSubmit(e) {
         e.preventDefault();
         
@@ -462,32 +486,26 @@ class RSVPManager {
                 relationship: formData.get('relationship'),
                 attendance: formData.get('attendance'),
                 guestCount: parseInt(formData.get('guestCount')),
-                locations: selectedLocations,
+                locations: selectedLocations,  // array
                 message: formData.get('message'),
                 timestamp: new Date().toLocaleString('vi-VN'),
                 date: new Date().toISOString().split('T')[0]
             };
             
-            console.log('📤 Preparing to send RSVP data:', data);
-            
             this.validateData(data);
             
-            // 1. Lưu vào localStorage trước
+            // 1. Lưu local trước (giữ nguyên)
             this.saveToLocalStorage(data);
-            
-            // 2. Cập nhật stats ngay lập tức
             this.updateLocalStats(data);
             this.updateStatsDisplay();
             
-            // 3. Gửi lên server (bất đồng bộ, không block)
-            this.sendToGoogleSheets(data).then(result => {
-                console.log('✅ Gửi dữ liệu thành công:', result);
-            }).catch(error => {
-                console.warn('⚠️ Lưu local thành công, nhưng lỗi server:', error);
-                // Không hiển thị lỗi cho user, vì đã lưu local
-            });
+            // 2. Gửi server (POST)
+            await this.sendToGoogleSheets(data);
             
-            // 4. Hiển thị xác nhận cho user
+            // 3. Sau khi gửi thành công → load lại stats từ server
+            await this.loadStatsFromServer();
+            
+            // 4. Hiển thị xác nhận
             this.showConfirmation(data);
             this.form.reset();
             this.updateCounterButtons(1);
