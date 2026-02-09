@@ -1914,9 +1914,23 @@ h1, h2, h3, h4, .section-title {
 
 /* Đảm bảo overlay hiển thị */
 .gallery-item:nth-last-child(-n+3) .gallery-overlay {
-    opacity: 1 !important;
+    opacity: 0 !important;
 }
 
 .gallery-item:nth-last-child(-n+3) .gallery-overlay i {
+    transform: scale(0) !important;
+}
+.gallery-item:nth-last-child(-n+3):hover .gallery-overlay {
+    opacity: 1 !important;
+}
+
+.gallery-item:nth-last-child(-n+3):hover .gallery-overlay i {
     transform: scale(1) !important;
+}
+#stars {
+    display: none !important; /* Ẩn hiệu ứng sao */
+}
+
+.petals-container {
+    display: none !important; /* Ẩn hiệu ứng cánh hoa */
 }

@@ -484,8 +484,8 @@ class OptimizedWeddingInvitation {
         console.log('🚀 Optimized Wedding Invitation initializing...');
         this.preloadCriticalImages();
         
-        this.starsBackground = new OptimizedStarsBackground();
-        this.petals = new OptimizedPetals();
+        // this.starsBackground = new OptimizedStarsBackground();
+        // this.petals = new OptimizedPetals();
         this.slideshow = new OptimizedHeroSlideshow();
         this.rsvpManager = new RSVPManager();
         
