@@ -298,12 +298,29 @@ class OptimizedHeroSlideshow {
     }
 }
 
-// ===== RSVP MANAGER (giữ nguyên) =====
+// ===== RSVP MANAGER (ĐÃ CẬP NHẬT) =====
 class RSVPManager {
     constructor() {
         this.SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz3j7iYQ5ur_TMHNIMiGdhb0ejLSWKmV4yIMysSL8-5mxV2VLkxbGg9KmKC6lkL-83nlg/exec';
         
-        this.stats = {
+        // Khởi tạo stats từ localStorage hoặc mặc định
+        this.stats = this.loadInitialStats();
+        
+        this.init();
+    }
+
+    loadInitialStats() {
+        try {
+            const saved = localStorage.getItem('weddingRSVPStats');
+            if (saved) {
+                return JSON.parse(saved);
+            }
+        } catch (err) {
+            console.warn('Không load được stats từ localStorage:', err);
+        }
+        
+        // Trả về stats mặc định
+        return {
             totalGuests: 0,
             attendingGuests: 0,
             confirmedGroups: 0,
@@ -313,8 +330,6 @@ class RSVPManager {
                 party: 0
             }
         };
-        
-        this.init();
     }
 
     init() {
@@ -322,9 +337,12 @@ class RSVPManager {
         this.setupForm();
         this.setupCounter();
         this.setupLocationOptions();
-        this.loadStats();
-        this.updateStatsDisplay();
+        this.updateStatsDisplay(); // Cập nhật hiển thị ngay từ đầu
         
+        // Kiểm tra nếu có dữ liệu cũ trong localStorage
+        this.loadAllRSVPs();
+        
+        // Cập nhật mỗi 5 phút (tùy chọn)
         setInterval(() => this.loadStats(), 300000);
     }
 
@@ -454,31 +472,26 @@ class RSVPManager {
             
             this.validateData(data);
             
-            const response = await this.sendToGoogleSheets(data);
+            // 1. Lưu vào localStorage trước
+            this.saveToLocalStorage(data);
             
-            console.log('📨 Server response status:', response);
+            // 2. Cập nhật stats ngay lập tức
+            this.updateLocalStats(data);
+            this.updateStatsDisplay();
             
+            // 3. Gửi lên server (bất đồng bộ, không block)
+            this.sendToGoogleSheets(data).then(result => {
+                console.log('✅ Gửi dữ liệu thành công:', result);
+            }).catch(error => {
+                console.warn('⚠️ Lưu local thành công, nhưng lỗi server:', error);
+                // Không hiển thị lỗi cho user, vì đã lưu local
+            });
+            
+            // 4. Hiển thị xác nhận cho user
             this.showConfirmation(data);
             this.form.reset();
             this.updateCounterButtons(1);
             this.toggleLocationOptions();
-            
-            if (data.attendance === 'Có') {
-                this.stats.totalGuests += data.guestCount;
-                this.stats.attendingGuests += data.guestCount;
-                this.stats.confirmedGroups += 1;
-                
-                data.locations.forEach(loc => {
-                    if (loc === 'Nhà trai') this.stats.locations.groom += data.guestCount;
-                    if (loc === 'Nhà gái') this.stats.locations.bride += data.guestCount;
-                    if (loc === 'Báo hỷ') this.stats.locations.party += data.guestCount;
-                });
-                
-                this.updateStatsDisplay();
-                localStorage.setItem('weddingRSVPStats', JSON.stringify(this.stats));
-            }
-            
-            setTimeout(() => this.loadStats(), 3000);
             
         } catch (error) {
             console.error('❌ Submit error:', error);
@@ -535,13 +548,113 @@ class RSVPManager {
         }
     }
 
-    async loadStats() {
+    saveToLocalStorage(data) {
         try {
+            const savedData = JSON.parse(localStorage.getItem('weddingRSVPs') || '[]');
+            savedData.push({
+                ...data,
+                id: Date.now() + Math.random(),
+                submittedAt: new Date().toISOString()
+            });
+            localStorage.setItem('weddingRSVPs', JSON.stringify(savedData));
+            console.log('📁 Đã lưu vào localStorage:', savedData.length, 'bản ghi');
+            
+            // Cũng lưu riêng stats
+            localStorage.setItem('weddingRSVPStats', JSON.stringify(this.stats));
+            
+        } catch (err) {
+            console.error('❌ Lỗi lưu localStorage:', err);
+            // Fallback: lưu vào biến global nếu localStorage không hoạt động
+            if (!window.tempWeddingData) {
+                window.tempWeddingData = {
+                    rsvps: [],
+                    stats: this.stats
+                };
+            }
+            window.tempWeddingData.rsvps.push(data);
+            window.tempWeddingData.stats = this.stats;
+        }
+    }
+
+    loadAllRSVPs() {
+        try {
+            const savedData = JSON.parse(localStorage.getItem('weddingRSVPs') || '[]');
+            if (savedData.length > 0) {
+                console.log('📋 Tìm thấy', savedData.length, 'RSVP trong localStorage');
+                
+                // Tính toán lại stats từ tất cả RSVP
+                this.calculateStatsFromRSVPs(savedData);
+                this.updateStatsDisplay();
+            }
+        } catch (err) {
+            console.warn('Không load được RSVPs từ localStorage:', err);
+        }
+    }
+
+    calculateStatsFromRSVPs(rsvps) {
+        // Reset stats
+        this.stats = {
+            totalGuests: 0,
+            attendingGuests: 0,
+            confirmedGroups: 0,
+            locations: {
+                groom: 0,
+                bride: 0,
+                party: 0
+            }
+        };
+        
+        // Tính toán lại từ tất cả RSVP
+        rsvps.forEach(rsvp => {
+            if (rsvp.attendance === 'Có') {
+                this.stats.totalGuests += rsvp.guestCount || 0;
+                this.stats.attendingGuests += rsvp.guestCount || 0;
+                this.stats.confirmedGroups += 1;
+                
+                if (rsvp.locations && Array.isArray(rsvp.locations)) {
+                    rsvp.locations.forEach(loc => {
+                        if (loc === 'Nhà trai') this.stats.locations.groom += rsvp.guestCount || 0;
+                        if (loc === 'Nhà gái') this.stats.locations.bride += rsvp.guestCount || 0;
+                        if (loc === 'Báo hỷ') this.stats.locations.party += rsvp.guestCount || 0;
+                    });
+                }
+            }
+        });
+        
+        // Lưu stats đã tính toán lại
+        localStorage.setItem('weddingRSVPStats', JSON.stringify(this.stats));
+    }
+
+    updateLocalStats(data) {
+        if (data.attendance === 'Có') {
+            this.stats.totalGuests += data.guestCount;
+            this.stats.attendingGuests += data.guestCount;
+            this.stats.confirmedGroups += 1;
+            
+            data.locations.forEach(loc => {
+                if (loc === 'Nhà trai') this.stats.locations.groom += data.guestCount;
+                if (loc === 'Nhà gái') this.stats.locations.bride += data.guestCount;
+                if (loc === 'Báo hỷ') this.stats.locations.party += data.guestCount;
+            });
+            
+            // Lưu stats mới vào localStorage
+            localStorage.setItem('weddingRSVPStats', JSON.stringify(this.stats));
+        }
+    }
+
+    loadStats() {
+        try {
+            // Load từ localStorage (chỉ cập nhật nếu cần)
             const saved = localStorage.getItem('weddingRSVPStats');
             if (saved) {
-                this.stats = JSON.parse(saved);
-                this.updateStatsDisplay();
-                console.log('📊 Loaded stats from localStorage:', this.stats);
+                const parsedStats = JSON.parse(saved);
+                
+                // Kiểm tra xem stats có thay đổi không
+                if (JSON.stringify(parsedStats) !== JSON.stringify(this.stats)) {
+                    this.stats = parsedStats;
+                    this.updateStatsDisplay();
+                    console.log('📊 Updated stats from localStorage:', this.stats);
+                }
             }
         } catch (err) {
             console.warn('Không load được stats:', err);
@@ -552,47 +665,13 @@ class RSVPManager {
         const totalEl = document.getElementById('totalGuests');
         const attendingEl = document.getElementById('attendingGuests');
         const groupsEl = document.getElementById('confirmedGroups');
-        
-        if (totalEl) this.animateCounter(totalEl, this.stats.totalGuests);
-        if (attendingEl) this.animateCounter(attendingEl, this.stats.attendingGuests);
-        if (groupsEl) this.animateCounter(groupsEl, this.stats.confirmedGroups);
-        
-        this.updateLocationStats();
-    }
-
-    updateLocationStats() {
-        let container = document.querySelector('.location-stats');
-        
-        if (!container) {
-            container = document.createElement('div');
-            container.className = 'location-stats';
-            container.innerHTML = `
-                <div class="location-stat">
-                    <i class="fas fa-home"></i>
-                    <span class="stat-number" id="groomLocationCount">0</span>
-                    <span class="stat-label">Nhà trai</span>
-                </div>
-                <div class="location-stat">
-                    <i class="fas fa-heart"></i>
-                    <span class="stat-number" id="brideLocationCount">0</span>
-                    <span class="stat-label">Nhà gái</span>
-                </div>
-                <div class="location-stat">
-                    <i class="fas fa-champagne-glasses"></i>
-                    <span class="stat-number" id="partyLocationCount">0</span>
-                    <span class="stat-label">Báo hỷ</span>
-                </div>
-            `;
-            const rsvpStats = document.querySelector('.rsvp-stats');
-            if (rsvpStats && rsvpStats.parentNode) {
-                rsvpStats.parentNode.insertBefore(container, rsvpStats.nextSibling);
-            }
-        }
-        
         const groomEl = document.getElementById('groomLocationCount');
         const brideEl = document.getElementById('brideLocationCount');
         const partyEl = document.getElementById('partyLocationCount');
         
+        if (totalEl) this.animateCounter(totalEl, this.stats.totalGuests);
+        if (attendingEl) this.animateCounter(attendingEl, this.stats.attendingGuests);
+        if (groupsEl) this.animateCounter(groupsEl, this.stats.confirmedGroups);
         if (groomEl) this.animateCounter(groomEl, this.stats.locations.groom);
         if (brideEl) this.animateCounter(brideEl, this.stats.locations.bride);
         if (partyEl) this.animateCounter(partyEl, this.stats.locations.party);
@@ -885,9 +964,35 @@ function setupLazyLoading() {
     }
 }
 
-// ===== INITIALIZATION WITH PERFORMANCE OPTIMIZATIONS =====
+// ===== LOCALSTORAGE FALLBACK =====
+function checkLocalStorage() {
+    try {
+        const testKey = '__test__';
+        localStorage.setItem(testKey, 'test');
+        localStorage.removeItem(testKey);
+        return true;
+    } catch (e) {
+        console.warn('⚠️ localStorage không khả dụng, sử dụng fallback');
+        // Fallback: dùng biến global
+        window.tempWeddingData = window.tempWeddingData || {
+            stats: {
+                totalGuests: 0,
+                attendingGuests: 0,
+                confirmedGroups: 0,
+                locations: { groom: 0, bride: 0, party: 0 }
+            },
+            rsvps: []
+        };
+        return false;
+    }
+}
+
+// ===== INITIALIZATION =====
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize with slight delay to prioritize content rendering
+    // Kiểm tra localStorage
+    checkLocalStorage();
+    
+    // Initialize với độ trễ nhỏ
     setTimeout(() => {
         try {
             window.weddingApp = new OptimizedWeddingInvitation();
@@ -896,6 +1001,15 @@ document.addEventListener('DOMContentLoaded', () => {
             setupLazyLoading();
             
             console.log('🎉 Ứng dụng đã khởi động tối ưu!');
+            
+            // Kiểm tra và cập nhật stats nếu có dữ liệu từ session trước
+            if (window.tempWeddingData && window.tempWeddingData.stats) {
+                console.log('📊 Sử dụng dữ liệu từ session trước:', window.tempWeddingData.stats);
+                const rsvpManager = window.weddingApp.rsvpManager;
+                rsvpManager.stats = window.tempWeddingData.stats;
+                rsvpManager.updateStatsDisplay();
+            }
+            
         } catch (err) {
             console.error('❌ Application failed to start:', err);
             document.body.classList.remove('loading');

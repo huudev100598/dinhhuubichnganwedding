@@ -401,155 +401,176 @@ Ngày hôm nay, em trở thành cô dâu của anh. Và mai sau, em sẽ là ng�
         </section>
 
         <!-- RSVP Section -->
-<section class="section rsvp-section">
-    <div class="container">
-        <div class="section-header">
-            <h2 class="section-title">Xác Nhận Tham Dự</h2>
-            <p class="section-subtitle">Vui lòng cho chúng tôi biết bạn có thể tham dự không</p>
-        </div>
+        <section class="section rsvp-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Xác Nhận Tham Dự</h2>
+                    <p class="section-subtitle">Vui lòng cho chúng tôi biết bạn có thể tham dự không</p>
+                </div>
 
-        <div class="rsvp-stats">
-            <div class="stat-item">
-                <i class="fas fa-user-friends"></i>
-                <span class="stat-number" id="totalGuests">0</span>
-                <span class="stat-label">Khách đã xác nhận</span>
-            </div>
-            <div class="stat-item">
-                <i class="fas fa-glass-cheers"></i>
-                <span class="stat-number" id="attendingGuests">0</span>
-                <span class="stat-label">Sẽ tham dự</span>
-            </div>
-            <div class="stat-item">
-                <i class="fas fa-heart"></i>
-                <span class="stat-number" id="confirmedGroups">0</span>
-                <span class="stat-label">Nhóm đã xác nhận</span>
-            </div>
-        </div>
-
-        <div class="rsvp-form-container">
-            <form id="rsvpForm" class="rsvp-form">
-                <!-- Họ tên và Mối quan hệ trên 1 dòng -->
-                <div class="form-group double-column">
-                    <div class="form-subgroup">
-                        <label for="name">Họ và tên *</label>
-                        <input type="text" id="name" name="name" required placeholder="Nhập họ tên của bạn">
+                <!-- THỐNG KÊ TỔNG QUAN -->
+                <div class="rsvp-stats">
+                    <div class="stat-item">
+                        <i class="fas fa-user-friends"></i>
+                        <span class="stat-number" id="totalGuests">0</span>
+                        <span class="stat-label">Khách đã xác nhận</span>
                     </div>
-                    <div class="form-subgroup">
-                        <label for="relationship">Mối quan hệ *</label>
-                        <select id="relationship" name="relationship" required>
-                            <option value="">Chọn mối quan hệ</option>
-                            <option value="Bạn bè">Bạn bè</option>
-                            <option value="Đồng nghiệp">Đồng nghiệp</option>
-                            <option value="Họ hàng">Họ hàng</option>
-                            <option value="Học cùng">Học cùng</option>
-                            <option value="Khác">Khác</option>
-                        </select>
+                    <div class="stat-item">
+                        <i class="fas fa-glass-cheers"></i>
+                        <span class="stat-number" id="attendingGuests">0</span>
+                        <span class="stat-label">Sẽ tham dự</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-heart"></i>
+                        <span class="stat-number" id="confirmedGroups">0</span>
+                        <span class="stat-label">Nhóm đã xác nhận</span>
                     </div>
                 </div>
 
-                <!-- Attendance options - 1 dòng -->
-                <div class="form-group">
-                    <label for="attendance">Bạn có tham dự được không? *</label>
-                    <div class="attendance-options">
-                        <label class="option-label">
-                            <input type="radio" name="attendance" value="Có" required>
-                            <span class="option-text">
-                                <i class="fas fa-check-circle"></i>
-                                <span>Có, tôi sẽ tham dự</span>
-                            </span>
-                        </label>
-                        <label class="option-label">
-                            <input type="radio" name="attendance" value="Không">
-                            <span class="option-text">
-                                <i class="fas fa-times-circle"></i>
-                                <span>Rất tiếc, tôi không thể tham dự</span>
-                            </span>
-                        </label>
-                        <label class="option-label">
-                            <input type="radio" name="attendance" value="Chưa chắc chắn">
-                            <span class="option-text">
-                                <i class="fas fa-question-circle"></i>
-                                <span>Tôi sẽ xác nhận sau</span>
-                            </span>
-                        </label>
+                <!-- THỐNG KÊ THEO ĐỊA ĐIỂM -->
+                <div class="location-stats">
+                    <div class="location-stat">
+                        <i class="fas fa-home"></i>
+                        <span class="stat-number" id="groomLocationCount">0</span>
+                        <span class="stat-label">Nhà trai (Hà Tĩnh)</span>
+                    </div>
+                    <div class="location-stat">
+                        <i class="fas fa-heart"></i>
+                        <span class="stat-number" id="brideLocationCount">0</span>
+                        <span class="stat-label">Nhà gái (Lâm Đồng)</span>
+                    </div>
+                    <div class="location-stat">
+                        <i class="fas fa-champagne-glasses"></i>
+                        <span class="stat-number" id="partyLocationCount">0</span>
+                        <span class="stat-label">Báo hỷ (TP.HCM)</span>
                     </div>
                 </div>
 
-                <div class="form-group guest-count-group">
-                    <label for="guestCount">Số người tham dự (bao gồm bạn) *</label>
-                    <div class="guest-counter">
-                        <button type="button" class="counter-btn minus" aria-label="Giảm số lượng">
-                            <i class="fas fa-minus"></i>
-                        </button>
-                        <input type="number" id="guestCount" name="guestCount" value="1" min="1" max="10" readonly>
-                        <button type="button" class="counter-btn plus" aria-label="Tăng số lượng">
+                <div class="rsvp-form-container">
+                    <form id="rsvpForm" class="rsvp-form">
+                        <!-- Họ tên và Mối quan hệ trên 1 dòng -->
+                        <div class="form-group double-column">
+                            <div class="form-subgroup">
+                                <label for="name">Họ và tên *</label>
+                                <input type="text" id="name" name="name" required placeholder="Nhập họ tên của bạn">
+                            </div>
+                            <div class="form-subgroup">
+                                <label for="relationship">Mối quan hệ *</label>
+                                <select id="relationship" name="relationship" required>
+                                    <option value="">Chọn mối quan hệ</option>
+                                    <option value="Bạn bè">Bạn bè</option>
+                                    <option value="Đồng nghiệp">Đồng nghiệp</option>
+                                    <option value="Họ hàng">Họ hàng</option>
+                                    <option value="Học cùng">Học cùng</option>
+                                    <option value="Khác">Khác</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Attendance options - 1 dòng -->
+                        <div class="form-group">
+                            <label for="attendance">Bạn có tham dự được không? *</label>
+                            <div class="attendance-options">
+                                <label class="option-label">
+                                    <input type="radio" name="attendance" value="Có" required>
+                                    <span class="option-text">
+                                        <i class="fas fa-check-circle"></i>
+                                        <span>Có, tôi sẽ tham dự</span>
+                                    </span>
+                                </label>
+                                <label class="option-label">
+                                    <input type="radio" name="attendance" value="Không">
+                                    <span class="option-text">
+                                        <i class="fas fa-times-circle"></i>
+                                        <span>Rất tiếc, tôi không thể tham dự</span>
+                                    </span>
+                                </label>
+                                <label class="option-label">
+                                    <input type="radio" name="attendance" value="Chưa chắc chắn">
+                                    <span class="option-text">
+                                        <i class="fas fa-question-circle"></i>
+                                        <span>Tôi sẽ xác nhận sau</span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group guest-count-group">
+                            <label for="guestCount">Số người tham dự (bao gồm bạn) *</label>
+                            <div class="guest-counter">
+                                <button type="button" class="counter-btn minus" aria-label="Giảm số lượng">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <input type="number" id="guestCount" name="guestCount" value="1" min="1" max="10" readonly>
+                                <button type="button" class="counter-btn plus" aria-label="Tăng số lượng">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- THÊM PHẦN MỚI: Chọn địa điểm tham dự -->
+                        <div class="form-group" id="locationGroup">
+                            <label for="location">Tham dự ở đâu? *</label>
+                            <div class="location-options">
+                                <label class="location-option">
+                                    <input type="checkbox" name="location" value="Nhà trai">
+                                    <span class="location-text">
+                                        <i class="fas fa-home"></i>
+                                        <span>Nhà trai (Hà Tĩnh)</span>
+                                        <small class="location-date">30/03/2026</small>
+                                    </span>
+                                </label>
+                                <label class="location-option">
+                                    <input type="checkbox" name="location" value="Nhà gái">
+                                    <span class="location-text">
+                                        <i class="fas fa-heart"></i>
+                                        <span>Nhà gái (Lâm Đồng)</span>
+                                        <small class="location-date">22/03/2026</small>
+                                    </span>
+                                </label>
+                                <label class="location-option">
+                                    <input type="checkbox" name="location" value="Báo hỷ">
+                                    <span class="location-text">
+                                        <i class="fas fa-champagne-glasses"></i>
+                                        <span>Tiệc báo hỷ (TP.HCM)</span>
+                                        <small class="location-date">19/04/2026</small>
+                                    </span>
+                                </label>
+                            </div>
+                            <small class="hint">Có thể chọn nhiều địa điểm</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="message">Lời nhắn gửi đến cô dâu chú rể</label>
+                            <textarea id="message" name="message" rows="3" 
+                                      placeholder="Gửi lời chúc mừng hoặc lời nhắn yêu thương..."></textarea>
+                        </div>
+
+                        <div class="form-footer">
+                            <button type="submit" class="submit-btn">
+                                <i class="fas fa-paper-plane"></i>
+                                <span>Gửi xác nhận</span>
+                            </button>
+                            <p class="form-note">Thông tin của bạn sẽ được dev Hữu mang đi bán kiếm tiền tổ chức đám cưới</p>
+                        </div>
+                    </form>
+
+                    <div class="confirmation-message" id="confirmationMessage">
+                        <div class="success-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h3>Cảm ơn bạn đã xác nhận!</h3>
+                        <p>Dev Hữu đã nhận được thông tin của bạn và rất mong được đón tiếp bạn trong ngày trọng đại. ^-^</p>
+                        <div class="confirmation-details" id="confirmationDetails"></div>
+                        <button class="btn-new-response" id="newResponseBtn">
                             <i class="fas fa-plus"></i>
+                            <span>Gửi xác nhận mới</span>
                         </button>
                     </div>
                 </div>
-
-                <!-- THÊM PHẦN MỚI: Chọn địa điểm tham dự -->
-                <div class="form-group" id="locationGroup">
-                    <label for="location">Tham dự ở đâu? *</label>
-                    <div class="location-options">
-                        <label class="location-option">
-                            <input type="checkbox" name="location" value="Nhà trai">
-                            <span class="location-text">
-                                <i class="fas fa-home"></i>
-                                <span>Nhà trai (Hà Tĩnh)</span>
-                                <small class="location-date">30/03/2026</small>
-                            </span>
-                        </label>
-                        <label class="location-option">
-                            <input type="checkbox" name="location" value="Nhà gái">
-                            <span class="location-text">
-                                <i class="fas fa-heart"></i>
-                                <span>Nhà gái (Lâm Đồng)</span>
-                                <small class="location-date">22/03/2026</small>
-                            </span>
-                        </label>
-                        <label class="location-option">
-                            <input type="checkbox" name="location" value="Báo hỷ">
-                            <span class="location-text">
-                                <i class="fas fa-champagne-glasses"></i>
-                                <span>Tiệc báo hỷ (TP.HCM)</span>
-                                <small class="location-date">19/04/2026</small>
-                            </span>
-                        </label>
-                    </div>
-                    <small class="hint">Có thể chọn nhiều địa điểm</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="message">Lời nhắn gửi đến cô dâu chú rể</label>
-                    <textarea id="message" name="message" rows="3" 
-                              placeholder="Gửi lời chúc mừng hoặc lời nhắn yêu thương..."></textarea>
-                </div>
-
-                <div class="form-footer">
-                    <button type="submit" class="submit-btn">
-                        <i class="fas fa-paper-plane"></i>
-                        <span>Gửi xác nhận</span>
-                    </button>
-                    <p class="form-note">Thông tin của bạn sẽ được dev Hữu mang đi bán kiếm tiền tổ chức đám cưới</p>
-                </div>
-            </form>
-
-            <div class="confirmation-message" id="confirmationMessage">
-                <div class="success-icon">
-                    <i class="fas fa-check-circle"></i>
-                </div>
-                <h3>Cảm ơn bạn đã xác nhận!</h3>
-                <p>Dev Hữu đã nhận được thông tin của bạn và rất mong được đón tiếp bạn trong ngày trọng đại. ^-^</p>
-                <div class="confirmation-details" id="confirmationDetails"></div>
-                <button class="btn-new-response" id="newResponseBtn">
-                    <i class="fas fa-plus"></i>
-                    <span>Gửi xác nhận mới</span>
-                </button>
             </div>
-        </div>
-    </div>
-</section>
+        </section>
+
         <!-- Footer -->
         <footer class="footer">
             <div class="container">
