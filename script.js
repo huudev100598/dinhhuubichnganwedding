@@ -401,34 +401,78 @@ class Gallery {
     }
 
     showZoomModal() {
-        const modal = document.createElement('div');
-        modal.className = 'modal-zoom show';
-        modal.innerHTML = `
-            <div class="modal-zoom-content">
-                <button class="zoom-close-btn"><i class="fas fa-times"></i></button>
-                <button class="zoom-nav-btn zoom-prev-btn"><i class="fas fa-chevron-left"></i></button>
-                <img class="modal-zoom-image" src="${this.images[this.currentIndex].src}" alt="${this.images[this.currentIndex].title}">
-                <button class="zoom-nav-btn zoom-next-btn"><i class="fas fa-chevron-right"></i></button>
-            </div>
-        `;
-        
-        document.body.appendChild(modal);
-        document.body.style.overflow = 'hidden';
-        
-        modal.querySelector('.zoom-close-btn').addEventListener('click', () => this.closeZoomModal());
-        modal.querySelector('.zoom-prev-btn').addEventListener('click', () => {
+    const modal = document.createElement('div');
+    modal.className = 'modal-zoom show';
+    modal.innerHTML = `
+        <button class="zoom-close-btn"><i class="fas fa-times"></i></button>
+        <div class="modal-zoom-content">
+            <button class="zoom-nav-btn zoom-prev-btn"><i class="fas fa-chevron-left"></i></button>
+            <img class="modal-zoom-image" src="${this.images[this.currentIndex].src}" alt="${this.images[this.currentIndex].title}">
+            <button class="zoom-nav-btn zoom-next-btn"><i class="fas fa-chevron-right"></i></button>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    document.body.style.overflow = 'hidden';
+    
+    // Thêm sự kiện cho các nút
+    const closeBtn = modal.querySelector('.zoom-close-btn');
+    const prevBtn = modal.querySelector('.zoom-prev-btn');
+    const nextBtn = modal.querySelector('.zoom-next-btn');
+    const modalImage = modal.querySelector('.modal-zoom-image');
+    
+    // Đóng modal
+    closeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.closeZoomModal();
+    });
+    
+    // Xử lý nút previous
+    prevBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.navigate(-1);
+        modalImage.src = this.images[this.currentIndex].src;
+        modalImage.alt = this.images[this.currentIndex].title;
+    });
+    
+    // Xử lý nút next
+    nextBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.navigate(1);
+        modalImage.src = this.images[this.currentIndex].src;
+        modalImage.alt = this.images[this.currentIndex].title;
+    });
+    
+    // Đóng modal khi click bên ngoài ảnh
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            this.closeZoomModal();
+        }
+    });
+    
+    // Đóng modal khi nhấn Escape
+    const handleKeyDown = (e) => {
+        if (e.key === 'Escape') {
+            this.closeZoomModal();
+            document.removeEventListener('keydown', handleKeyDown);
+        } else if (e.key === 'ArrowLeft') {
             this.navigate(-1);
-            modal.querySelector('.modal-zoom-image').src = this.images[this.currentIndex].src;
-        });
-        modal.querySelector('.zoom-next-btn').addEventListener('click', () => {
+            modalImage.src = this.images[this.currentIndex].src;
+            modalImage.alt = this.images[this.currentIndex].title;
+        } else if (e.key === 'ArrowRight') {
             this.navigate(1);
-            modal.querySelector('.modal-zoom-image').src = this.images[this.currentIndex].src;
-        });
-        
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) this.closeZoomModal();
-        });
-    }
+            modalImage.src = this.images[this.currentIndex].src;
+            modalImage.alt = this.images[this.currentIndex].title;
+        }
+    };
+    
+    document.addEventListener('keydown', handleKeyDown);
+    
+    // Xóa event listener khi modal đóng
+    modal.addEventListener('close', () => {
+        document.removeEventListener('keydown', handleKeyDown);
+    });
+}
 
     closeZoomModal() {
         const modal = document.querySelector('.modal-zoom');
