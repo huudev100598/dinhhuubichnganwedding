@@ -1,142 +1,5 @@
 // ===== OPTIMIZED PERFORMANCE =====
 
-class OptimizedStarsBackground {
-    constructor() {
-        this.canvas = document.getElementById('stars');
-        if (!this.canvas) return;
-        
-        this.ctx = this.canvas.getContext('2d');
-        this.stars = [];
-        this.animationFrame = null;
-        this.lastTime = 0;
-        this.frameInterval = 1000 / 30;
-        this.isAnimating = true;
-        
-        this.init();
-    }
-
-    init() {
-        this.resize();
-        this.createStars();
-        this.startAnimation();
-        
-        let resizeTimeout;
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(() => this.resize(), 100);
-        });
-        
-        document.addEventListener('visibilitychange', () => {
-            this.isAnimating = !document.hidden;
-            if (this.isAnimating && !this.animationFrame) this.startAnimation();
-            else if (!this.isAnimating && this.animationFrame) {
-                cancelAnimationFrame(this.animationFrame);
-                this.animationFrame = null;
-            }
-        });
-    }
-
-    resize() {
-        this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
-        const count = window.innerWidth <= 768 ? 50 : 100;
-        this.createStars(count);
-    }
-
-    createStars(count = 100) {
-        this.stars = [];
-        for (let i = 0; i < count; i++) {
-            this.stars.push({
-                x: Math.random() * this.canvas.width,
-                y: Math.random() * this.canvas.height,
-                size: Math.random() * 1.5 + 0.5,
-                speed: Math.random() * 0.3 + 0.1,
-                opacity: Math.random() * 0.4 + 0.2
-            });
-        }
-    }
-
-    animate(timestamp) {
-        if (!this.isAnimating) return;
-        if (timestamp - this.lastTime < this.frameInterval) {
-            this.animationFrame = requestAnimationFrame(t => this.animate(t));
-            return;
-        }
-        this.lastTime = timestamp;
-        
-        this.ctx.fillStyle = 'rgba(15, 18, 32, 0.1)';
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        
-        this.stars.forEach(star => {
-            star.y += star.speed;
-            if (star.y > this.canvas.height) {
-                star.y = 0;
-                star.x = Math.random() * this.canvas.width;
-            }
-            this.ctx.beginPath();
-            this.ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
-            this.ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
-            this.ctx.fill();
-        });
-        
-        this.animationFrame = requestAnimationFrame(t => this.animate(t));
-    }
-
-    startAnimation() {
-        if (this.animationFrame) cancelAnimationFrame(this.animationFrame);
-        this.animationFrame = requestAnimationFrame(t => this.animate(t));
-    }
-
-    stopAnimation() {
-        this.isAnimating = false;
-        if (this.animationFrame) {
-            cancelAnimationFrame(this.animationFrame);
-            this.animationFrame = null;
-        }
-    }
-}
-
-class OptimizedPetals {
-    constructor() {
-        this.container = document.querySelector('.petals-container');
-        this.petals = [];
-        this.maxPetals = 6;
-        this.isMobile = window.innerWidth <= 768;
-        
-        if (this.container && !this.isMobile) this.init();
-    }
-
-    init() {
-        for (let i = 0; i < this.maxPetals; i++) setTimeout(() => this.createPetal(), i * 800);
-        document.addEventListener('visibilitychange', () => this.toggleAnimations(!document.hidden));
-    }
-
-    createPetal() {
-        if (this.petals.length >= this.maxPetals) return;
-        const petal = document.createElement('div');
-        petal.className = 'petal';
-        const size = Math.random() * 10 + 4;
-        const left = Math.random() * 100;
-        const duration = Math.random() * 10 + 8;
-        petal.style.cssText = `width:${size}px;height:${size}px;left:${left}vw;animation:fall ${duration}s linear infinite;will-change:transform;`;
-        this.container.appendChild(petal);
-        this.petals.push(petal);
-        setTimeout(() => {
-            if (petal.parentNode) {
-                petal.remove();
-                this.petals = this.petals.filter(p => p !== petal);
-                setTimeout(() => this.createPetal(), 1000);
-            }
-        }, duration * 1000);
-    }
-
-    toggleAnimations(isVisible) {
-        this.petals.forEach(petal => {
-            petal.style.animationPlayState = isVisible ? 'running' : 'paused';
-        });
-    }
-}
-
 class OptimizedHeroSlideshow {
     constructor() {
         this.slides = document.querySelectorAll('.slide');
@@ -234,7 +97,277 @@ class OptimizedHeroSlideshow {
     }
 }
 
-// ===== RSVP MANAGER (CHỈ FORM + SUBMIT) =====
+// ===== OPTIMIZED GALLERY =====
+class OptimizedGallery {
+    constructor() {
+        this.mainImage = document.getElementById('mainGalleryImage');
+        this.mainTitle = document.getElementById('mainImageTitle');
+        this.mainDesc = document.getElementById('mainImageDesc');
+        this.thumbnails = document.querySelectorAll('.thumbnail-item');
+        this.currentImage = document.getElementById('currentImage');
+        this.totalImages = document.getElementById('totalImages');
+        this.prevThumbBtn = document.querySelector('.prev-thumb');
+        this.nextThumbBtn = document.querySelector('.next-thumb');
+        this.thumbnailList = document.querySelector('.thumbnail-list');
+        this.scrollContainer = document.querySelector('.thumbnail-scroll-container');
+        this.images = [];
+        this.currentIndex = 0;
+        
+        this.init();
+    }
+
+    init() {
+        console.log('📸 Initializing Optimized Gallery...');
+        this.loadImages();
+        this.setupEventListeners();
+        this.updateCounter();
+        this.updateThumbNavButtons();
+    }
+
+    loadImages() {
+        this.thumbnails.forEach((thumb, index) => {
+            const src = thumb.getAttribute('data-src');
+            const title = thumb.getAttribute('data-title');
+            const desc = thumb.getAttribute('data-desc');
+            
+            this.images.push({ src, title, desc });
+            
+            if (index === 0) {
+                thumb.classList.add('active');
+                this.updateMainImage(src, title, desc);
+            }
+        });
+        
+        this.totalImages.textContent = this.images.length;
+    }
+
+    setupEventListeners() {
+        // Thumbnail click
+        this.thumbnails.forEach((thumb, index) => {
+            thumb.addEventListener('click', () => this.selectImage(index));
+        });
+
+        // Navigation buttons
+        if (this.prevThumbBtn) {
+            this.prevThumbBtn.addEventListener('click', () => this.scrollThumbs('prev'));
+        }
+        
+        if (this.nextThumbBtn) {
+            this.nextThumbBtn.addEventListener('click', () => this.scrollThumbs('next'));
+        }
+
+        // Main image click for zoom
+        if (this.mainImage) {
+            this.mainImage.addEventListener('click', () => this.showZoomModal());
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') this.navigate(-1);
+            if (e.key === 'ArrowRight') this.navigate(1);
+        });
+    }
+
+    selectImage(index) {
+        if (index < 0 || index >= this.images.length || index === this.currentIndex) return;
+        
+        // Update active thumbnail
+        this.thumbnails.forEach(thumb => thumb.classList.remove('active'));
+        this.thumbnails[index].classList.add('active');
+        
+        // Scroll thumbnail into view
+        this.scrollToThumb(index);
+        
+        // Update main image with fade effect
+        this.fadeTransition(() => {
+            this.currentIndex = index;
+            const img = this.images[index];
+            this.updateMainImage(img.src, img.title, img.desc);
+            this.updateCounter();
+        });
+    }
+
+    fadeTransition(callback) {
+        if (!this.mainImage) return callback();
+        
+        this.mainImage.style.opacity = '0';
+        setTimeout(() => {
+            callback();
+            setTimeout(() => {
+                this.mainImage.style.opacity = '1';
+            }, 50);
+        }, 300);
+    }
+
+    updateMainImage(src, title, desc) {
+        if (this.mainImage) {
+            // Preload image
+            const tempImg = new Image();
+            tempImg.onload = () => {
+                this.mainImage.src = src;
+                this.mainImage.style.opacity = '1';
+            };
+            tempImg.src = src;
+        }
+        
+        if (this.mainTitle) this.mainTitle.textContent = title;
+        if (this.mainDesc) this.mainDesc.textContent = desc;
+    }
+
+    scrollToThumb(index) {
+        if (!this.thumbnailList || !this.scrollContainer) return;
+        
+        const thumb = this.thumbnails[index];
+        const containerWidth = this.scrollContainer.clientWidth;
+        const thumbOffset = thumb.offsetLeft;
+        const thumbWidth = thumb.offsetWidth;
+        
+        // Center the thumbnail
+        const scrollTo = thumbOffset - (containerWidth / 2) + (thumbWidth / 2);
+        
+        this.thumbnailList.style.transform = `translateX(-${scrollTo}px)`;
+        this.thumbnailList.style.transition = 'transform 0.3s ease';
+    }
+
+    scrollThumbs(direction) {
+        if (!this.thumbnailList) return;
+        
+        const scrollAmount = 150;
+        const currentTransform = this.getCurrentTransform();
+        let newTransform;
+        
+        if (direction === 'prev') {
+            newTransform = Math.max(0, currentTransform - scrollAmount);
+        } else {
+            const maxScroll = this.thumbnailList.scrollWidth - this.scrollContainer.clientWidth;
+            newTransform = Math.min(maxScroll, currentTransform + scrollAmount);
+        }
+        
+        this.thumbnailList.style.transform = `translateX(-${newTransform}px)`;
+        this.updateThumbNavButtons();
+    }
+
+    getCurrentTransform() {
+        if (!this.thumbnailList) return 0;
+        const transform = this.thumbnailList.style.transform;
+        if (!transform || transform === 'none') return 0;
+        
+        const match = transform.match(/translateX\(-(\d+)px\)/);
+        return match ? parseInt(match[1]) : 0;
+    }
+
+    updateThumbNavButtons() {
+        if (!this.prevThumbBtn || !this.nextThumbBtn || !this.scrollContainer) return;
+        
+        const currentTransform = this.getCurrentTransform();
+        const maxScroll = this.thumbnailList.scrollWidth - this.scrollContainer.clientWidth;
+        
+        this.prevThumbBtn.disabled = currentTransform <= 0;
+        this.nextThumbBtn.disabled = currentTransform >= maxScroll;
+    }
+
+    navigate(direction) {
+        const newIndex = this.currentIndex + direction;
+        if (newIndex >= 0 && newIndex < this.images.length) {
+            this.selectImage(newIndex);
+        }
+    }
+
+    updateCounter() {
+        this.currentImage.textContent = this.currentIndex + 1;
+    }
+
+    showZoomModal() {
+        // Create zoom modal if it doesn't exist
+        let modal = document.getElementById('galleryZoomModal');
+        
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'galleryZoomModal';
+            modal.className = 'modal-zoom';
+            modal.innerHTML = `
+                <div class="modal-zoom-content">
+                    <button class="zoom-close-btn" aria-label="Đóng">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <button class="zoom-nav-btn zoom-prev-btn" aria-label="Ảnh trước">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <img class="modal-zoom-image" src="" alt="">
+                    <button class="zoom-nav-btn zoom-next-btn" aria-label="Ảnh tiếp">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Setup modal events
+            const closeBtn = modal.querySelector('.zoom-close-btn');
+            const prevBtn = modal.querySelector('.zoom-prev-btn');
+            const nextBtn = modal.querySelector('.zoom-next-btn');
+            const modalImage = modal.querySelector('.modal-zoom-image');
+            
+            closeBtn.addEventListener('click', () => this.closeZoomModal(modal));
+            prevBtn.addEventListener('click', () => {
+                this.navigate(-1);
+                this.updateZoomModalImage(modalImage);
+            });
+            nextBtn.addEventListener('click', () => {
+                this.navigate(1);
+                this.updateZoomModalImage(modalImage);
+            });
+            
+            // Close on background click
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) this.closeZoomModal(modal);
+            });
+            
+            // Keyboard navigation in modal
+            const handleKeyDown = (e) => {
+                if (modal.classList.contains('show')) {
+                    if (e.key === 'Escape') {
+                        this.closeZoomModal(modal);
+                    }
+                    if (e.key === 'ArrowLeft') {
+                        this.navigate(-1);
+                        this.updateZoomModalImage(modalImage);
+                    }
+                    if (e.key === 'ArrowRight') {
+                        this.navigate(1);
+                        this.updateZoomModalImage(modalImage);
+                    }
+                }
+            };
+            
+            document.addEventListener('keydown', handleKeyDown);
+            
+            // Store event handler for cleanup
+            modal._keydownHandler = handleKeyDown;
+        }
+        
+        // Show current image in modal
+        const modalImage = modal.querySelector('.modal-zoom-image');
+        this.updateZoomModalImage(modalImage);
+        
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+
+    updateZoomModalImage(modalImage) {
+        const img = this.images[this.currentIndex];
+        modalImage.src = img.src;
+        modalImage.alt = img.title;
+    }
+
+    closeZoomModal(modal) {
+        modal.classList.remove('show');
+        document.body.style.overflow = 'auto';
+        // Clean up event listener
+        document.removeEventListener('keydown', modal._keydownHandler);
+    }
+}
+
+// ===== RSVP MANAGER =====
 class RSVPManager {
     constructor() {
         this.SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz3j7iYQ5ur_TMHNIMiGdhb0ejLSWKmV4yIMysSL8-5mxV2VLkxbGg9KmKC6lkL-83nlg/exec';
@@ -484,14 +617,12 @@ class OptimizedWeddingInvitation {
         console.log('🚀 Optimized Wedding Invitation initializing...');
         this.preloadCriticalImages();
         
-        // this.starsBackground = new OptimizedStarsBackground();
-        // this.petals = new OptimizedPetals();
         this.slideshow = new OptimizedHeroSlideshow();
         this.rsvpManager = new RSVPManager();
+        this.gallery = new OptimizedGallery();
         
         this.setupOptimizedEventListeners();
         this.setupScrollAnimations();
-        this.setupGalleryAnimations();
         this.hideLoadingScreen();
         
         console.log('✅ Optimized initialization complete!');
@@ -512,7 +643,8 @@ class OptimizedWeddingInvitation {
             this.musicBtn.addEventListener('click', e => {
                 e.stopPropagation();
                 if (this.music.paused) {
-                    this.music.play().then(() => this.musicBtn.classList.add('playing'));
+                    this.music.play().then(() => this.musicBtn.classList.add('playing'))
+                        .catch(err => console.log('Music play failed:', err));
                 } else {
                     this.music.pause();
                     this.musicBtn.classList.remove('playing');
@@ -520,7 +652,10 @@ class OptimizedWeddingInvitation {
             });
             
             const playMusic = () => {
-                if (this.music.paused) this.music.play().then(() => this.musicBtn.classList.add('playing'));
+                if (this.music.paused) {
+                    this.music.play().then(() => this.musicBtn.classList.add('playing'))
+                        .catch(err => console.log('Music play failed:', err));
+                }
                 document.removeEventListener('click', playMusic);
                 document.removeEventListener('touchstart', playMusic);
             };
@@ -546,19 +681,6 @@ class OptimizedWeddingInvitation {
         });
     }
 
-    setupGalleryAnimations() {
-        document.querySelectorAll('.gallery-img-container').forEach(container => {
-            container.addEventListener('click', () => {
-                const img = container.querySelector('img');
-                if (img) {
-                    document.getElementById('modalImage').src = img.src;
-                    document.getElementById('imageModal').style.display = 'flex';
-                    document.body.style.overflow = 'hidden';
-                }
-            });
-        });
-    }
-
     setupScrollAnimations() {
         const observer = new IntersectionObserver(entries => {
             entries.forEach(entry => {
@@ -568,24 +690,12 @@ class OptimizedWeddingInvitation {
             });
         }, { 
             threshold: 0.1, 
-            rootMargin: '100px 0px' // Tăng margin để trigger sớm hơn
+            rootMargin: '100px 0px'
         });
         
-        // Observe tất cả items
-        document.querySelectorAll('.timeline-item, .gallery-item').forEach(el => {
+        document.querySelectorAll('.timeline-item').forEach(el => {
             observer.observe(el);
         });
-        
-        // Tự động thêm class 'visible' cho 3 items cuối sau 2 giây
-        setTimeout(() => {
-            const galleryItems = document.querySelectorAll('.gallery-item');
-            const lastThree = Array.from(galleryItems).slice(-3);
-            lastThree.forEach(item => {
-                if (!item.classList.contains('visible')) {
-                    item.classList.add('visible');
-                }
-            });
-        }, 2000);
     }
 
     hideLoadingScreen() {
