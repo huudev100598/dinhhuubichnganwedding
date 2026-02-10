@@ -491,8 +491,8 @@ h1, h2, h3, h4, .section-title {
     border-radius: var(--radius-md);
     overflow: hidden;
     box-shadow: var(--shadow-lg);
-    min-height: 350px;
-    height: 350px;
+    min-height: 250px;
+    height: 250px;
     width: 100%;
 }
 
